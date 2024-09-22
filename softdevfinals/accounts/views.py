@@ -18,6 +18,10 @@ from .models import Profile
 from .forms import CustomLoginForm, CustomUserCreationForm
 
 def register(request):
+
+    if request.user.is_authenticated:
+        return redirect('home')  
+
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)  # Custom form with email field
         if form.is_valid():
@@ -47,7 +51,7 @@ def register(request):
         form = CustomUserCreationForm()  # Use the custom form with email
     return render(request, 'accounts/register.html', {'form': form})
 
-# Activation view
+
 def activate(request, uidb64, token):
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
@@ -64,13 +68,13 @@ def activate(request, uidb64, token):
         messages.error(request, 'Activation link is invalid!')
         return redirect('register')
 
-
 def login_view(request):
     if request.user.is_authenticated:
-        return redirect('home')
+        print("User is already logged in")  # Debugging line
+        return redirect('home') 
 
     if request.method == 'POST':
-        form = CustomLoginForm(request, data=request.POST)
+        form = CustomLoginForm(request.POST)  # Correct form initialization
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
@@ -83,8 +87,10 @@ def login_view(request):
                     return redirect('home')
                 else:
                     messages.error(request, 'Your account is not activated yet. Please check your email.')
+                    print("qwe")
             else:
                 messages.error(request, 'Invalid username or password.')
+                print("qwe")
     else:
         form = CustomLoginForm()
 
