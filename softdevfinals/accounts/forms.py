@@ -4,8 +4,9 @@ from django.contrib.auth.forms import UserCreationForm
 
 
 class CustomLoginForm(forms.Form):
-    username = forms.CharField(max_length=150, required=True)
+    email = forms.EmailField(required=True)
     password = forms.CharField(widget=forms.PasswordInput, required=True)
+
     
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True)  # Adding the email field

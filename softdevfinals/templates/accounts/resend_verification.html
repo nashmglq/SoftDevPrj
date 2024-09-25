@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Resend Email Verification</title>
+</head>
+<body>
+    <h2>Resend Email Verification</h2>
+    <p>If you haven't received your verification email, please enter your email address below to resend it.</p>
+    
+    <form method="post">
+        {% csrf_token %}
+        <input type="email" name="email" placeholder="Enter your email address" required>
+        <button type="submit">Resend Verification Email</button>
+    </form>
+    
+    <p><a href="{% url 'home' %}">Back to Home</a></p>
+
+    <!-- Display messages -->
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+</body>
+</html>

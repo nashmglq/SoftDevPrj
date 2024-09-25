@@ -18,21 +18,18 @@ from .models import Profile
 from .forms import CustomLoginForm, CustomUserCreationForm
 
 def register(request):
-
     if request.user.is_authenticated:
         return redirect('home')  
 
     if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST)  # Custom form with email field
+        form = CustomUserCreationForm(request.POST)  
         if form.is_valid():
-            user = form.save(commit=False)  # Don't save the user yet
-            user.is_active = False  # User needs to verify email
+            user = form.save(commit=False)
+            user.is_active = False  
             user.save()
 
-            # Create Profile
             Profile.objects.create(user=user)
 
-            # Generate email verification link
             current_site = get_current_site(request)
             mail_subject = 'Activate your account'
             uid = urlsafe_base64_encode(force_bytes(user.pk))
@@ -40,15 +37,13 @@ def register(request):
             activation_link = reverse('activate', kwargs={'uidb64': uid, 'token': token})
             activation_url = f"http://{current_site.domain}{activation_link}"
             
-            # Simple email message
             message = f"Hi {user.username},\n\nPlease click the link below to activate your account:\n{activation_url}\n\nThank you!"
             send_mail(mail_subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
 
-            
             messages.success(request, 'Account created! Please check your email to activate your account.')
-            return redirect('login')
+            return redirect('resend_verification')  # Redirecting to resend verification page
     else:
-        form = CustomUserCreationForm()  # Use the custom form with email
+        form = CustomUserCreationForm()  
     return render(request, 'accounts/register.html', {'form': form})
 
 
@@ -66,30 +61,30 @@ def activate(request, uidb64, token):
         return redirect('login')
     else:
         messages.error(request, 'Activation link is invalid!')
-        return redirect('register')
+        return render(request, 'accounts/invalid.html')
 
 def login_view(request):
     if request.user.is_authenticated:
-        print("User is already logged in")  # Debugging line
+        print("User is already logged in") 
         return redirect('home') 
 
     if request.method == 'POST':
-        form = CustomLoginForm(request.POST)  # Correct form initialization
+        form = CustomLoginForm(request.POST)  
         if form.is_valid():
-            username = form.cleaned_data.get('username')
+            email = form.cleaned_data.get('email')
             password = form.cleaned_data.get('password')
-            user = authenticate(username=username, password=password)
 
-            if user is not None:
-                if user.is_active:
-                    login(request, user)
-                    messages.success(request, f'Welcome back, {username}!')
-                    return redirect('home')
-                else:
-                    messages.error(request, 'Your account is not activated yet. Please check your email.')
-                    print("qwe")
-            else:
-                messages.error(request, 'Invalid username or password.')
+            try:
+                user = User.objects.get(email=email)
+                if user is not None:
+                    if user.is_active:
+                        login(request, user)
+                        messages.success(request, f'Welcome back, {user.username}!')
+                        return redirect('home')
+                    else:
+                        messages.error(request, 'Your account is not activated yet. Please check your email.')
+            except User.DoesNotExist:
+                messages.error(request, 'Invalid email or password.')
                 print("qwe")
     else:
         form = CustomLoginForm()
@@ -105,3 +100,29 @@ def logout_view(request):
 def home(request):
     print("Accessed home view by:", request.user.username)  # Debugging line
     return render(request, 'home/home.html')
+
+
+def resend_verification_email(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        try:
+            user = User.objects.get(email=email)
+            if user and not user.is_active:
+                current_site = get_current_site(request)
+                mail_subject = 'Activate your account'
+                uid = urlsafe_base64_encode(force_bytes(user.pk))
+                token = account_activation_token.make_token(user)
+                activation_link = reverse('activate', kwargs={'uidb64': uid, 'token': token})
+                activation_url = f"http://{current_site.domain}{activation_link}"
+                
+                # Simple email message
+                message = f"Hi {user.username},\n\nPlease click the link below to activate your account:\n{activation_url}\n\nThank you!"
+                send_mail(mail_subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
+
+                messages.success(request, 'Verification email has been resent. Please check your inbox.')
+            else:
+                messages.error(request, 'This email is already activated.')
+        except User.DoesNotExist:
+            messages.error(request, 'The email address you entered does not exist in our records.')
+
+    return render(request, 'accounts/resend_verification.html')
