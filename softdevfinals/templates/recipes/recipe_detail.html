@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ object.name }}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <a href="{% url 'home' %}" class="btn-danger">Go back</a>
+        <h2>{{ object.name }}</h2>
+        <div>
+            {% if object.user == user %}
+                <a class = "btn btn-secondary btn-sm mt-1 mb-1" href= "{% url 'recipe-update' object.id %}">Update</a>
+            {% endif %}
+        <div>
+            <div>
+                {% if object.user == user %}
+                    <a class = "btn btn-danger" href= "{% url 'recipe-delete' object.id %}">Delete</a>
+                {% endif %}
+            <div>
+        {% if object.image %}
+            <img src="{{ object.image.url }}" alt="{{ object.name }}" style="max-width: 100px;">
+        {% else %}
+            <p>No image available.</p>
+        {% endif %}
+        
+        
+        <p><strong>Ingredients:</strong> {{ object.ingredients }}</p>
+        <p><strong>Cooking Time:</strong> {{ object.minutes }} minutes</p>
+        
+        {% if object.user %}
+            <p><strong>Created By:</strong> {{ object.user.username }}</p>
+        {% else %}
+            <p><strong>Created By:</strong> Unknown</p>
+        {% endif %}
+        <p><strong>Ingredients:</strong> {{ object.ingredientsList }}</p>
+        <p><strong>Description:</strong> {{ object.directions }}</p>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

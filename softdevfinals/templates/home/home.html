@@ -8,10 +8,37 @@
 </head>
 <body>
     <div class="container mt-5">
-        <h2>Welcome, {{ request.user.username }}!</h2> <!-- Display the logged-in user's name -->
+        <h2>Welcome, {{ request.user.username }}!</h2>
         <p>This is your home page.</p>
         
         <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+        
+        <!-- Button to create a new recipe -->
+        <a href="{% url 'recipe-create' %}" class="btn btn-primary mt-3">Create New Recipe</a>
+
+        <h3 class="mt-4">Your Recipes</h3>
+        <ul class="list-group mt-3">
+            {% for recipe in recipes %}
+                <li class="list-group-item">
+                    <h5>{{ recipe.name }}</h5>
+                    {% if recipe.image %}
+                        <a href="{% url 'recipe-detail' recipe.id %}">
+                            <img src="{{ recipe.image.url }}" alt="{{ recipe.name }}" style="max-width: 100px;">
+                        </a>
+                    {% endif %}
+                    <p><strong>Ingredients:</strong> {{ recipe.ingredients }}</p>
+                    <p><strong>Cooking Time:</strong> {{ recipe.minutes }} minutes</p>
+                    {% if recipe.user %}
+                        <p><strong>Created By:</strong> {{ recipe.user.username }}</p>
+                    {% else %}
+                        <p><strong>Created By:</strong> Unknown</p>
+                    {% endif %}
+                </li>
+            {% empty %}
+                <li class="list-group-item">No recipes found.</li>
+            {% endfor %}
+        </ul>
+        
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
