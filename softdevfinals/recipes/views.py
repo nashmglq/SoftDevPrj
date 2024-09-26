@@ -11,15 +11,11 @@ class RecipeListView(LoginRequiredMixin, ListView):
     context_object_name = 'recipes'
     login_url = 'login' 
 
-    def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect(self.login_url)  
-        return super().dispatch(request, *args, **kwargs)  
 
-
-class RecipeDetailView(DetailView):
+class RecipeDetailView(LoginRequiredMixin, DetailView):
     model = Recipe
     template_name = 'recipes/recipe_detail.html'  
+    
 
 class RecipeCreateView(LoginRequiredMixin, CreateView):
     model = Recipe

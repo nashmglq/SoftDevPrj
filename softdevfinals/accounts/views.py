@@ -55,6 +55,9 @@ def register(request):
 
 
 def activate(request, uidb64, token):
+    if request.user.is_authenticated:
+        return redirect('home')  
+
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
@@ -108,6 +111,9 @@ def logout_view(request):
 
 
 def resend_verification_email(request):
+    if request.user.is_authenticated:
+        return redirect('home')  
+
     if request.method == 'POST':
         email = request.POST.get('email')
         try:
@@ -134,6 +140,9 @@ def resend_verification_email(request):
 
 
 def password_reset_request(request):
+    if request.user.is_authenticated:
+        return redirect('home')  
+
 
     if request.user.is_authenticated:
         print("User is already logged in") 
