@@ -1,36 +1,147 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import Recipe
+from .models import *
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Q  
 from django.shortcuts import redirect
+from .forms import RatingCommentForm
+from django.views import View
+from django.db.models import Avg, Count
+from django.db.models.functions import Random
 
 class RecipeListView(LoginRequiredMixin, ListView):
     model = Recipe
-    template_name = 'home/home.html'  
+    template_name = 'home/home.html'
     context_object_name = 'recipes'
-    login_url = 'login' 
+    login_url = 'login'
 
     def get_queryset(self):
-        search_query = self.request.GET.get('search') 
-        ingredients_query = self.request.GET.get('fridge')  # This is the ingredient search
+        search_query = self.request.GET.get('search')
+        ingredients_query = self.request.GET.get('fridge')
+        order = self.request.GET.get('order') 
+
+        queryset = Recipe.objects.all()
 
         if ingredients_query:
-            ingredients = [ingredient.strip().lower() for ingredient in ingredients_query.split(',')]  
-            return Recipe.objects.filter(
-                Q(ingredientsList__icontains=ingredients[0]) 
-            ) if ingredients else Recipe.objects.all()
+            ingredients = [ingredient.strip().lower() for ingredient in ingredients_query.split(',')]
+            queryset = queryset.filter(
+                Q(ingredientsList__icontains=ingredients[0])
+            ) if ingredients else queryset
 
         if search_query:
-            return Recipe.objects.filter(
-                Q(name__icontains=search_query.lower())  
-            ) 
-        
-        return Recipe.objects.all() 
+            queryset = queryset.filter(
+                Q(name__icontains=search_query.lower())
+            )
+
+        queryset = queryset.annotate(
+            average_rating=Avg('ratings__score'),
+            views_count=Count('views')  
+        )
+
+        # Ordering logic
+        if order == 'highest':
+            queryset = queryset.order_by('-average_rating', '-created_at')  
+        elif order == 'lowest':
+            queryset = queryset.order_by('average_rating', '-created_at')
+        elif order == 'most_views':
+            queryset = queryset.order_by('-views_count')
+        else:
+            queryset = queryset.order_by('?')  # Random order
+
+        return queryset
 
 class RecipeDetailView(LoginRequiredMixin, DetailView):
     model = Recipe
     template_name = 'recipes/recipe_detail.html'  
+
+    def get(self, request, *args, **kwargs):
+        recipe = self.get_object()
+        
+        if not recipe.views.filter(id=request.user.id).exists():
+            recipe.views.add(request.user)  
+            recipe.view_count += 1  
+            recipe.save() 
+
+        return super().get(request, *args, **kwargs)
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = RatingCommentForm()
+        context['comments'] = self.object.comments.all()
+        context['rating'] = self.object.ratings.filter(user=self.request.user).first()
+
+        total_ratings = self.object.ratings.count()
+        if total_ratings > 0:
+            average_rating = self.object.ratings.aggregate(models.Avg('score'))['score__avg']
+        else:
+            average_rating = None
+
+        context['total_ratings'] = total_ratings
+        context['average_rating'] = average_rating
+
+        context['comments_with_ratings'] = [
+            {
+                'comment': comment,
+                'rating': self.object.ratings.filter(user=comment.user).first()
+            }
+            for comment in context['comments']
+        ]
+
+        return context
+
+    
+
+class AddRatingCommentView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        recipe = get_object_or_404(Recipe, pk=pk)
+        form = RatingCommentForm(request.POST)
+
+        if request.user == recipe.user:
+            return redirect(recipe.get_absolute_url())  
+
+        if form.is_valid():
+            if not recipe.ratings.filter(user=request.user).exists() and not recipe.comments.filter(user=request.user).exists():
+                Rating.objects.create(
+                    recipe=recipe,
+                    user=request.user,
+                    score=form.cleaned_data['score']
+                )
+                Comment.objects.create(
+                    recipe=recipe,
+                    user=request.user,
+                    content=form.cleaned_data['content']
+                )
+                return redirect(recipe.get_absolute_url())
+        
+        return redirect(recipe.get_absolute_url())
+    
+
+class UpdateRatingCommentView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        comment = get_object_or_404(Comment, pk=pk)
+        rating = get_object_or_404(Rating, recipe=comment.recipe, user=request.user)
+
+        if request.user == comment.user:
+            comment.content = request.POST.get('content', comment.content)  
+            comment.save()
+
+            if 'score' in request.POST:
+                rating.score = request.POST['score']
+                rating.save()
+
+        return redirect(comment.recipe.get_absolute_url())
+
+class DeleteRatingCommentView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        comment = get_object_or_404(Comment, pk=pk)
+        rating = get_object_or_404(Rating, recipe=comment.recipe, user=request.user)
+
+        if request.user == comment.user:
+            comment.delete()  
+            rating.delete()  
+
+        return redirect(comment.recipe.get_absolute_url())
     
 
 class RecipeCreateView(LoginRequiredMixin, CreateView):

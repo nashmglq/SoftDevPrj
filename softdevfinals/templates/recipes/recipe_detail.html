@@ -8,36 +8,106 @@
 </head>
 <body>
     <div class="container mt-5">
-        <a href="{% url 'home' %}" class="btn-danger">Go back</a>
+        <a href="{% url 'home' %}" class="btn btn-danger">Go back</a>
         <h2>{{ object.name }}</h2>
+        
         <div>
             {% if object.user == user %}
-                <a class = "btn btn-secondary btn-sm mt-1 mb-1" href= "{% url 'recipe-update' object.id %}">Update</a>
+                <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'recipe-update' object.id %}">Update</a>
+                <a class="btn btn-danger" href="{% url 'recipe-delete' object.id %}">Delete</a>
             {% endif %}
+        </div>
+        
         <div>
-            <div>
-                {% if object.user == user %}
-                    <a class = "btn btn-danger" href= "{% url 'recipe-delete' object.id %}">Delete</a>
-                {% endif %}
-            <div>
-        {% if object.image %}
-            <img src="{{ object.image.url }}" alt="{{ object.name }}" style="max-width: 100px;">
+            {% if object.image %}
+                <img src="{{ object.image.url }}" alt="{{ object.name }}" style="max-width: 100px;">
+            {% else %}
+                <p>No image available.</p>
+            {% endif %}
+            
+            <p><strong>Ingredients:</strong> {{ object.ingredients }}</p>
+            <p><strong>Cooking Time:</strong> {{ object.minutes }} minutes</p>
+            <p><strong>Calories:</strong> {{ object.calories }}</p>
+            
+            {% if object.user %}
+                <p><strong>Created By:</strong> {{ object.user.username }}</p>
+            {% else %}
+                <p><strong>Created By:</strong> Unknown</p>
+            {% endif %}
+            <p><strong>Ingredients List:</strong> {{ object.ingredientsList }}</p>
+            <p><strong>Directions:</strong> {{ object.directions }}</p>
+
+            <h4>Total Ratings: {{ total_ratings }}</h4>
+            {% if average_rating %}
+                <h4>Average Rating: {{ average_rating|floatformat:1 }}</h4>
+            {% else %}
+                <h4>Average Rating: Not rated yet.</h4>
+            {% endif %}
+        </div>
+
+        <h3 class = "mt-4">Rate and Comment</h3>
+        {% if object.user != user %}
+            {% if rating %}
+                <p>You have already rated this recipe: {{ rating.score }}.</p>
+            {% else %}
+                <form method="POST" action="{% url 'add-rating-comment' object.pk %}">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            {% endif %}
         {% else %}
-            <p>No image available.</p>
+            <p>You cannot rate your own recipe.</p>
         {% endif %}
+
+
+        <h4>Comments</h4>
+        <ul class="list-group">
+            {% for item in comments_with_ratings %}
+                <li class="list-group-item">
+                    <strong>{{ item.comment.user.username }}:</strong> {{ item.comment.content }}
+                    {% if item.rating %}
+                        <span class="badge badge-secondary">Rating: {{ item.rating.score }}</span>
+                    {% else %}
+                        <span class="badge badge-light">No rating given</span>
+                    {% endif %}
         
+                    {% if item.comment.user == user %}
+                        <button class="btn btn-warning btn-sm" onclick="toggleUpdateForm('update-form-{{ item.comment.id }}')">Update</button>
+                        
+                        <!-- Update form, initially hidden -->
+                        <div id="update-form-{{ item.comment.id }}" style="display: none; margin-top: 10px;">
+                            <form method="POST" action="{% url 'update-rating-comment' item.comment.id %}">
+                                {% csrf_token %}
+                                <input type="text" name="content" value="{{ item.comment.content }}" required>
+                                <input type="number" name="score" value="{{ item.rating.score }}" min="1" max="5" required>
+                                <button type="submit" class="btn btn-primary btn-sm">Submit Update</button>
+                            </form>
+                        </div>
+                        
+                        <!-- Delete form -->
+                        <form method="POST" action="{% url 'delete-rating-comment' item.comment.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                    {% endif %}
+                </li>
+            {% empty %}
+                <li class="list-group-item">No comments yet.</li>
+            {% endfor %}
+        </ul>
+        </div>
+        <script>
+            function toggleUpdateForm(formId) {
+                const form = document.getElementById(formId);
+                if (form.style.display === "none") {
+                    form.style.display = "block"; 
+                } else {
+                    form.style.display = "none"; 
+                }
+            }
+        </script>
         
-        <p><strong>Ingredients:</strong> {{ object.ingredients }}</p>
-        <p><strong>Cooking Time:</strong> {{ object.minutes }} minutes</p>
-        
-        {% if object.user %}
-            <p><strong>Created By:</strong> {{ object.user.username }}</p>
-        {% else %}
-            <p><strong>Created By:</strong> Unknown</p>
-        {% endif %}
-        <p><strong>Ingredients:</strong> {{ object.ingredientsList }}</p>
-        <p><strong>Description:</strong> {{ object.directions }}</p>
-    </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>

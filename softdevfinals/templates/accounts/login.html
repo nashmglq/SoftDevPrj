@@ -9,6 +9,7 @@
 <body>
     <div class="container mt-5">
         <h2 class="text-center">Login</h2>
+
         <form method="POST" class="mt-4">
             {% csrf_token %}
             <div class="form-group">
@@ -24,6 +25,16 @@
         <div class="text-center mt-3">
             <a href="{% url 'register' %}">Don't have an account? Register here</a> <br/>
             <a href="{% url 'password_reset' %}">Forgot Password?</a>
+
+            {% if messages %}
+            <div class="alert alert-dismissible fade show" role="alert">
+                {% for message in messages %}
+                    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
         </div>
     </div>
 

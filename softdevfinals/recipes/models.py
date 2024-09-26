@@ -12,9 +12,30 @@ class Recipe(models.Model):
     ingredientsList = models.TextField(blank=True, null=True)
     directions = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    views = models.ManyToManyField(User, related_name='viewed_recipes', blank=True)
+    view_count = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
 
     def get_absolute_url(self):
         return reverse('recipe-detail', kwargs={'pk': self.pk})
+
+
+class Comment(models.Model):
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='comments')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('recipe', 'user')  
+
+class Rating(models.Model):
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='ratings')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    score = models.IntegerField() 
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('recipe', 'user') 

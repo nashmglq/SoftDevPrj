@@ -89,12 +89,11 @@ def login_view(request):
 
                 if user.is_active and user.check_password(password):
                     login(request, user)
-                    messages.success(request, f'Welcome back, {user.username}!')
                     return redirect('home')
                 else:
-                    messages.error(request, 'Invalid email or password.')
+                    messages.error(request, 'Invalid email or password.', extra_tags='login')
             except User.DoesNotExist:
-                messages.error(request, 'Invalid email or password.')
+                messages.error(request, 'Invalid email or password.', extra_tags='login')
                 print("User does not exist.")
     else:
         form = CustomLoginForm()
@@ -129,11 +128,11 @@ def resend_verification_email(request):
                 message = f"Hi {user.username},\n\nPlease click the link below to activate your account:\n{activation_url}\n\nThank you!"
                 send_mail(mail_subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
 
-                messages.success(request, 'Verification email has been resent. Please check your inbox.')
+                messages.success(request, 'Verification email has been resent. Please check your inbox.', extra_tags='resend_email')
             else:
-                messages.error(request, 'This email is already activated.')
+                messages.error(request, 'This email is already activated.', extra_tags='resend_email')
         except User.DoesNotExist:
-            messages.error(request, 'The email address you entered does not exist in our records.')
+            messages.error(request, 'The email address you entered does not exist in our records.', extra_tags='resend_email')
 
     return render(request, 'accounts/resend_verification.html')
 
@@ -189,10 +188,10 @@ def password_reset_request(request):
             message = f"Hi {user.username},\n\nPlease click the link below to reset your password:\n{reset_url}\n\nThank you!"
             send_mail(mail_subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
 
-            messages.success(request, 'Password reset email has been sent. Please check your inbox.')
+            messages.success(request, 'Password reset email has been sent. Please check your inbox.', extra_tags='password_reset')
             return redirect('login')
         except User.DoesNotExist:
-            messages.error(request, 'This email is not registered.')
+            messages.error(request, 'This email is not registered.', extra_tags='password_reset')
     return render(request, 'accounts/password_reset.html')
 
 
@@ -213,7 +212,7 @@ def password_reset_confirm(request, uidb64, token):
             confirm_password = request.POST.get('confirm_password')
 
             if user.check_password(new_password):
-                messages.error(request, 'The new password cannot be the same as the old password. Please choose a different password.')
+                messages.error(request, 'The new password cannot be the same as the old password. Please choose a different password.', extra_tags='password_reset_confirm')
             else:
                 try:
                     password_validation.validate_password(password=new_password, user=user)
@@ -221,17 +220,17 @@ def password_reset_confirm(request, uidb64, token):
                     if new_password == confirm_password:
                         user.set_password(new_password)
                         user.save()
-                        messages.success(request, 'Your password has been successfully reset. You can now log in.')
+                        messages.success(request, 'Your password has been successfully reset. You can now log in.', extra_tags='password_reset_confirm')
                         return redirect('login')
                     else:
-                        messages.error(request, 'Passwords do not match. Please try again.')
+                        messages.error(request, 'Passwords do not match. Please try again.', extra_tags='password_reset_confirm')
 
                 except Exception as e:
-                    messages.error(request, str(e)) 
+                    messages.error(request, str(e), extra_tags='password_reset_confirm')  
 
         return render(request, 'accounts/password_reset_confirm.html', {'valid_link': True})
     else:
-        messages.error(request, 'The password reset link is invalid.')
+        messages.error(request, 'The password reset link is invalid.', extra_tags='password_reset_confirm')
         return render(request, 'accounts/invalid.html', {'valid_link': False})
     
  

@@ -20,7 +20,9 @@
     {% if messages %}
         <ul>
             {% for message in messages %}
-                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% if "resend_email" in message.tags %}
+                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endif %}
             {% endfor %}
         </ul>
     {% endif %}
