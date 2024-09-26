@@ -5,6 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script>
+        function setSearchMode(mode) {
+            const standardSearchForm = document.getElementById('standardSearchForm');
+            const fridgeSearchForm = document.getElementById('fridgeSearchForm');
+
+            if (mode === 'standard') {
+                standardSearchForm.classList.remove('d-none');
+                fridgeSearchForm.classList.add('d-none');
+            } else {
+                standardSearchForm.classList.add('d-none');
+                fridgeSearchForm.classList.remove('d-none');
+            }
+
+            localStorage.setItem('searchMode', mode);
+        }
+
+        window.onload = function() {
+            const mode = localStorage.getItem('searchMode') || 'standard';  
+            setSearchMode(mode);
+        };
+    </script>
 </head>
 <body>
     <div class="container mt-5">
@@ -13,8 +34,35 @@
         
         <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
         
-        <!-- Button to create a new recipe -->
         <a href="{% url 'recipe-create' %}" class="btn btn-primary mt-3">Create New Recipe</a>
+
+        <!-- Search Mode Selection -->
+        <div class="mt-4">
+            <button class="btn btn-info" onclick="setSearchMode('standard')">Normal Search</button>
+            <button class="btn btn-info" onclick="setSearchMode('fridge')">Ingredient-Based Search</button>
+        </div>
+
+        <!-- Standard Recipe Search Form -->
+        <form method="GET" action="{% url 'home' %}" id="standardSearchForm" class="mt-4">
+            <input type="hidden" name="mode" value="standard"> <!-- Hidden input for search mode -->
+            <div class="input-group">
+                <input type="text" name="search" class="form-control" placeholder="Search recipes..." aria-label="Search recipes">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="submit">Search</button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Fridge Ingredients Form -->
+        <form method="GET" action="{% url 'home' %}" id="fridgeSearchForm" class="mt-4 d-none">
+            <input type="hidden" name="mode" value="fridge"> <!-- Hidden input for search mode -->
+            <div class="input-group">
+                <input type="text" name="fridge" class="form-control" placeholder="What's in your fridge? (comma-separated)" aria-label="Fridge ingredients">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="submit">Find Recipes</button>
+                </div>
+            </div>
+        </form>
 
         <h3 class="mt-4">Your Recipes</h3>
         <ul class="list-group mt-3">

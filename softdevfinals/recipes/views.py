@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import Recipe
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-
+from django.db.models import Q  
 from django.shortcuts import redirect
 
 class RecipeListView(LoginRequiredMixin, ListView):
@@ -11,6 +11,22 @@ class RecipeListView(LoginRequiredMixin, ListView):
     context_object_name = 'recipes'
     login_url = 'login' 
 
+    def get_queryset(self):
+        search_query = self.request.GET.get('search') 
+        ingredients_query = self.request.GET.get('fridge')  # This is the ingredient search
+
+        if ingredients_query:
+            ingredients = [ingredient.strip().lower() for ingredient in ingredients_query.split(',')]  
+            return Recipe.objects.filter(
+                Q(ingredientsList__icontains=ingredients[0]) 
+            ) if ingredients else Recipe.objects.all()
+
+        if search_query:
+            return Recipe.objects.filter(
+                Q(name__icontains=search_query.lower())  
+            ) 
+        
+        return Recipe.objects.all() 
 
 class RecipeDetailView(LoginRequiredMixin, DetailView):
     model = Recipe
