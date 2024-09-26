@@ -3,10 +3,18 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from .models import Recipe
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
-class RecipeListView(ListView):
+from django.shortcuts import redirect
+
+class RecipeListView(LoginRequiredMixin, ListView):
     model = Recipe
     template_name = 'home/home.html'  
     context_object_name = 'recipes'
+    login_url = 'login' 
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(self.login_url)  
+        return super().dispatch(request, *args, **kwargs)  
 
 
 class RecipeDetailView(DetailView):
