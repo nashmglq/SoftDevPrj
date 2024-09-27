@@ -1,15 +1,61 @@
 <!DOCTYPE html>
+{% load crispy_forms_tags %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Profile</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-    <h1>{{user.username}} <h1>
-            <img src="{{ user.profile.image.url }}"  style="max-width: 100px;">
-    <h2>{{user.profile.bio}} <h1>
+    <a href="{% url 'home' %}" class="btn btn-danger">Go back</a>
+
+    <h1>{{ user.username }}</h1>
+    <img src="{{ user.profile.image.url }}" style="max-width: 100px;">
+    
+    {% if user.profile.bio %}
+        <h2>{{ user.profile.bio }}</h2>
+    {% else %}
+        <h2>No bio yet</h2>
+    {% endif %}
+    <div class="mt-3">
+        <a href="{% url 'update_user' %}" class="btn btn-primary">Update User Information</a>
+        <a href="{% url 'update_profile' %}" class="btn btn-secondary">Update Profile</a>
+    </div>
+
+    <!-- Display user's recipes -->
+    <h3>Recipes by {{ user.username }}:</h3>
+    <ul>
+        {% for recipe in user_recipes %}
+        <li class="list-group-item">
+            <h5>{{ recipe.name }}</h5>
+            {% if recipe.image %}
+                <a href="{% url 'recipe-detail' recipe.id %}">
+                    <img src="{{ recipe.image.url }}" alt="{{ recipe.name }}" style="max-width: 100px;">
+                </a>
+            {% endif %}
+            <p><strong>Ingredients:</strong> {{ recipe.ingredients }}</p>
+            <p><strong>Cooking Time:</strong> {{ recipe.minutes }} minutes</p>
+            {% if recipe.user %}
+                <p><strong>Created By:</strong> {{ recipe.user.username }}</p>
+            {% else %}
+                <p><strong>Created By:</strong> Unknown</p>
+            {% endif %}
+
+            <!-- Display the average rating -->
+            {% if recipe.average_rating %}
+                <p><strong>Average Rating:</strong> {{ recipe.average_rating|floatformat:1 }} / 5</p>
+            {% else %}
+                <p><strong>Average Rating:</strong> No ratings yet</p>
+            {% endif %}
+        </li>
+        {% empty %}
+            <li>No recipes yet.</li>
+        {% endfor %}
+    </ul>
+
+    <!-- Button links for updating user and profile -->
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

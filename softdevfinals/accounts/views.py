@@ -15,10 +15,11 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from .tokens import account_activation_token 
 from .models import Profile
-from .forms import CustomLoginForm, CustomUserCreationForm
+from .forms import CustomLoginForm, CustomUserCreationForm, UserUpdateForm, ProfileUpdateForm
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth import password_validation
 from django.contrib.auth.decorators import login_required
+from recipes.models import Recipe
 
 def register(request):
     if request.user.is_authenticated:
@@ -234,7 +235,47 @@ def password_reset_confirm(request, uidb64, token):
         messages.error(request, 'The password reset link is invalid.', extra_tags='password_reset_confirm')
         return render(request, 'accounts/invalid.html', {'valid_link': False})
 
-@login_required    
+@login_required
 def profile(request):
-    return render(request, 'accounts/profile.html')
+    user_recipes = Recipe.objects.filter(user=request.user)  # Filter recipes by user
+    context = {
+        'user_recipes': user_recipes,
+    }
+    return render(request, 'accounts/profile.html', context)
+
+@login_required
+def update_user(request):
+    if request.method == 'POST':
+        u_form = UserUpdateForm(request.POST, instance=request.user)
+        if u_form.is_valid():
+            u_form.save()
+            messages.success(request, 'Your user information has been updated!')
+            return redirect('profile')
+    else:
+        u_form = UserUpdateForm(instance=request.user)
+
+    context = {
+        'u_form': u_form
+    }
+    return render(request, 'accounts/profile_edit_user.html', context)
+
+@login_required
+def update_profile(request):
+    if request.method == 'POST':
+        p_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
+        if p_form.is_valid():
+            p_form.save()
+            messages.success(request, 'Your profile has been updated!')
+            return redirect('profile')
+    else:
+        p_form = ProfileUpdateForm(instance=request.user.profile)
+
+    context = {
+        'p_form': p_form
+    }
+    return render(request, 'accounts/profile_edit_profile.html', context)
+
+
+
+
  
