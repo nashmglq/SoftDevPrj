@@ -16,16 +16,7 @@
     
     <p><a href="{% url 'login' %}">Back to Home</a></p>
 
-    <!-- Display messages -->
-    {% if messages %}
-        <ul>
-            {% for message in messages %}
-                {% if "resend_email" in message.tags %}
-                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-                {% endif %}
-            {% endfor %}
-        </ul>
-    {% endif %}
+    
 
 </body>
 </html>

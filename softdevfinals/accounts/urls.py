@@ -10,5 +10,6 @@ urlpatterns = [
     path('resend-verification/', views.resend_verification_email, name='resend_verification'),
     path('password-reset/', views.password_reset_request, name='password_reset'), 
     path('password_reset_confirm/<uidb64>/<token>/', views.password_reset_confirm, name='password_reset_confirm'),  
-    path('home/', RecipeListView.as_view(), name='home') 
+    path('home/', RecipeListView.as_view(), name='home'),
+    path('profile/', views.profile, name='profile'),
 ]

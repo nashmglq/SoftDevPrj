@@ -18,6 +18,7 @@ from .models import Profile
 from .forms import CustomLoginForm, CustomUserCreationForm
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth import password_validation
+from django.contrib.auth.decorators import login_required
 
 def register(request):
     if request.user.is_authenticated:
@@ -232,5 +233,8 @@ def password_reset_confirm(request, uidb64, token):
     else:
         messages.error(request, 'The password reset link is invalid.', extra_tags='password_reset_confirm')
         return render(request, 'accounts/invalid.html', {'valid_link': False})
-    
+
+@login_required    
+def profile(request):
+    return render(request, 'accounts/profile.html')
  
