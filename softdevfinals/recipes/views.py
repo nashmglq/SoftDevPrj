@@ -6,8 +6,9 @@ from django.db.models import Q
 from django.shortcuts import redirect
 from .forms import RatingCommentForm
 from django.views import View
-from django.db.models import Avg, Count
-from django.db.models.functions import Random
+from django.db.models import Count, Avg, Q
+from django.utils.timezone import now
+from datetime import timedelta
 
 class RecipeListView(LoginRequiredMixin, ListView):
     model = Recipe
@@ -19,8 +20,10 @@ class RecipeListView(LoginRequiredMixin, ListView):
         search_query = self.request.GET.get('search')
         ingredients_query = self.request.GET.get('fridge')
         order = self.request.GET.get('order') 
-
         queryset = Recipe.objects.all()
+
+        # 1 week trending
+        time_threshold = now() - timedelta(days=7)
 
         if ingredients_query:
             ingredients = [ingredient.strip().lower() for ingredient in ingredients_query.split(',')]
@@ -34,19 +37,34 @@ class RecipeListView(LoginRequiredMixin, ListView):
             )
 
         queryset = queryset.annotate(
-            average_rating=Avg('ratings__score'),
-            views_count=Count('views')  
+            average_rating=Avg('ratings__score'), #get recipe rating
+            views_count=Count('views'),  # Count all views on each recipe
+            comments_count=Count('comments', filter=Q(comments__created_at__gte=time_threshold))  # Filter comments last 7 days
         )
 
-        # Ordering logic
+        # COMPUTE THE RECIPE TRENDS BY WEIGHT
+        queryset = queryset.annotate(
+            trending_score=(
+                Count('views') * 1 +  # Weight views by 1
+                Count('comments', filter=Q(comments__created_at__gte=time_threshold)) * 2 +  # Weight recent comments by 2
+                Avg('ratings__score') * 3  # Weight ratings by 3
+            )
+        )
+
         if order == 'highest':
             queryset = queryset.order_by('-average_rating', '-created_at')  
         elif order == 'lowest':
             queryset = queryset.order_by('average_rating', '-created_at')
         elif order == 'most_views':
             queryset = queryset.order_by('-views_count')
+        elif order == 'trending': 
+            queryset = queryset.order_by('-trending_score')
+        elif order == 'newest':  
+            queryset = queryset.order_by('-created_at')
+        elif order == 'oldest':  
+              queryset = queryset.order_by('created_at')
         else:
-            queryset = queryset.order_by('?')  # Random order
+            queryset = queryset.order_by('?')  
 
         return queryset
 

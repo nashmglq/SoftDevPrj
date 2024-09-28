@@ -9,13 +9,19 @@
         function setSearchMode(mode) {
             const standardSearchForm = document.getElementById('standardSearchForm');
             const fridgeSearchForm = document.getElementById('fridgeSearchForm');
+            const normalSearchButton = document.getElementById('normalSearchButton');
+            const fridgeSearchButton = document.getElementById('fridgeSearchButton');
 
             if (mode === 'standard') {
                 standardSearchForm.classList.remove('d-none');
                 fridgeSearchForm.classList.add('d-none');
+                normalSearchButton.classList.add('active'); 
+                fridgeSearchButton.classList.remove('active');
             } else {
                 standardSearchForm.classList.add('d-none');
                 fridgeSearchForm.classList.remove('d-none');
+                normalSearchButton.classList.remove('active'); 
+                fridgeSearchButton.classList.add('active'); 
             }
 
             localStorage.setItem('searchMode', mode);
@@ -24,7 +30,14 @@
         window.onload = function() {
             const mode = localStorage.getItem('searchMode') || 'standard';  
             setSearchMode(mode);
+            
+            if (mode === 'standard') {
+                document.getElementById('normalSearchButton').classList.add('active');
+            } else {
+                document.getElementById('fridgeSearchButton').classList.add('active');
+            }
         };
+
     </script>
 </head>
 <body>
@@ -40,8 +53,8 @@
 
         <!-- Search Mode Selection -->
         <div class="mt-4">
-            <button class="btn btn-info" onclick="setSearchMode('standard')">Normal Search</button>
-            <button class="btn btn-info" onclick="setSearchMode('fridge')">Ingredient-Based Search</button>
+            <button id="normalSearchButton" class="btn btn-info" onclick="setSearchMode('standard')">Normal Search</button>
+            <button id="fridgeSearchButton" class="btn btn-info" onclick="setSearchMode('fridge')">Ingredient-Based Search</button>
         </div>
 
         <!-- Standard Recipe Search Form -->
@@ -68,10 +81,14 @@
 
         <div class="mt-4">
             <p>Sort by rating:</p>
+            <a href="{% url 'home' %}?order=trending" class="btn btn-info">Trending Recipes</a>
             <a href="{% url 'home' %}?order=highest" class="btn btn-info">Most Rated</a>
             <a href="{% url 'home' %}?order=lowest" class="btn btn-info">Least Rated</a>
             <a href="{% url 'home' %}" class="btn btn-info">Random</a>
             <a href="?order=most_views" class="btn btn-info">Most Visited</a>
+            <a href="?order=newest" class="btn btn-info">Newest</a>
+            <a href="?order=oldest" class="btn btn-info">Oldest</a> 
+            <a href="{% url 'home' %}" class="btn btn-danger">Remove Filters</a> 
         </div>
 
         <h3 class="mt-4">Your Recipes</h3>

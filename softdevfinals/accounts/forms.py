@@ -34,3 +34,8 @@ class ProfileUpdateForm(forms.ModelForm):
         model = Profile
         fields = ['image', 'bio']
 
+
+class ContactForm(forms.Form):
+    subject = forms.CharField(max_length=100, required=True)
+    email = forms.EmailField(required=True)
+    message = forms.CharField(widget=forms.Textarea, required=True)

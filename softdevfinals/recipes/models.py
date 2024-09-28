@@ -34,7 +34,7 @@ class Comment(models.Model):
 class Rating(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='ratings')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    score = models.IntegerField() 
+    score = models.DecimalField(max_digits=4, decimal_places=1)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

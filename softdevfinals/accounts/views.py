@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate, logout
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login, authenticate, logout, update_session_auth_hash
+from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -15,11 +15,12 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from .tokens import account_activation_token 
 from .models import Profile
-from .forms import CustomLoginForm, CustomUserCreationForm, UserUpdateForm, ProfileUpdateForm
+from .forms import CustomLoginForm, CustomUserCreationForm, UserUpdateForm, ProfileUpdateForm, ContactForm
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth import password_validation
 from django.contrib.auth.decorators import login_required
 from recipes.models import Recipe
+
 
 def register(request):
     if request.user.is_authenticated:
@@ -278,4 +279,62 @@ def update_profile(request):
 
 
 
- 
+def contact_us(request):
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            subject = form.cleaned_data['subject']
+            message = form.cleaned_data['message']
+            
+            send_mail(
+                f'Contact Us Form Submission: {subject}',
+                message,
+                email,  
+                [settings.EMAIL_HOST_USER], 
+                fail_silently=False,
+            )
+
+            user_message = f"Thank you for contacting us!\n\nSubject: {subject}\n\nYour Message:\n{message}\n\nWe have received your message and will get back to you soon."
+            send_mail(
+                'Thank You for Contacting Us',
+                user_message,
+                settings.EMAIL_HOST_USER, 
+                [email],  
+                fail_silently=False,
+            )
+
+            return redirect('contact_us') 
+    else:
+        form = ContactForm()
+
+    return render(request, 'contact/contact_us.html', {'form': form})
+
+
+@login_required
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+
+        if form.is_valid():
+            new_password = form.cleaned_data.get('new_password1')
+            old_password = request.POST.get('old_password')
+        
+            if request.user.check_password(old_password):
+                if old_password == new_password:
+                    form.add_error('new_password1', 'The new password cannot be the same as the old password.')
+                else:
+                    user = form.save()
+                    update_session_auth_hash(request, user)  
+                    messages.success(request, 'Your password has been changed successfully!')
+                    return redirect('home')  
+            else:
+                messages.error(request, 'The old password is incorrect.')
+
+        else:
+            messages.error(request, 'Please correct the error below.')
+
+    else:
+        form = PasswordChangeForm(request.user)
+    
+    return render(request, 'accounts/change_password.html', {'form': form})
