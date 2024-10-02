@@ -1,21 +1,28 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resend Email Verification</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/resend_verification.css' %}">
 </head>
 <body>
+    <div class="box-container">
     <h2>Resend Email Verification</h2>
     <p>If you haven't received your verification email, please enter your email address below to resend it.</p>
     
     <form method="post">
         {% csrf_token %}
-        <input type="email" name="email" placeholder="Enter your email address" required>
-        <button type="submit">Resend Verification Email</button>
+        <input type="email" class="form-control" name="email" placeholder="Enter your email address" required>
+        <div class="text-right mt-2 v">
+        <button type="submit" class="btn custom-btn">Resend</button>
+        </div>
     </form>
     
     <p><a href="{% url 'login' %}">Back to Home</a></p>
-
+    </div>
     
 
 </body>
