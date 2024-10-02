@@ -1,38 +1,45 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
-<body>
-    <div class="container mt-5">
-        <h2 class="text-center">Login</h2>
-
-        <form method="POST" class="mt-4">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
-            </div>            
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+    <!DOCTYPE html>
+    {%load static%}
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Login</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    </head>
+    <body>
+        <div class="container mt-5">
+            <div class="text-center mb-4"></div>
+                <img src="{% static 'css/logo.png' %}" alt="Logo" class="logo" />
             </div>
-            <button type="submit" class="btn btn-primary btn-block">Login</button>
-        </form>
-        <div class="text-center mt-3">
-            <a href="{% url 'register' %}">Don't have an account? Register here</a> <br/>
-            <a href="{% url 'password_reset' %}">Forgot Password?</a> <br/>
-            <a href="{% url 'contact_us' %}">Contact us</a>
+            <h1 class="website-name">Share Mo Lang</h1>
 
-            
+            <!-- Add a div with a custom class to box the form -->
+            <div class="box-container p-4 mt-4">
+                <h4 class="text-center">Login</h4>
+                <form method="POST" class="mt-4">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+                    </div>            
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+                    </div>
+                    <button type="submit" class="btn custom-btn btn-block">Login</button>
+                </form>
+                <div class="text-center mt-3">
+                    <h7>Don't have an account? </h7><a href="{% url 'register' %}">Create Account</a> <br/>
+                    <a href="{% url 'password_reset' %}">Forgot Password?</a> <br/>
+                    <a href="{% url 'contact_us' %}">Contact us</a>
+                </div>
+            </div>
         </div>
-    </div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
-</html>
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    </body>
+    </html>

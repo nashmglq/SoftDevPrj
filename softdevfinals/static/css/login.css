@@ -1,0 +1,65 @@
+html, body {
+    height: 100%; /* Ensures the body takes up the full height of the viewport */
+    margin: 0;
+}
+
+body {
+    background-color: #343131; 
+    padding: 1rem; /* Add padding around the body to prevent elements from touching screen edges */
+}
+
+.box-container {
+    background-color: #f8f9fa; /* Light grey background */
+    border: 0.0625rem solid #dee2e6; /* 1px solid border */
+    border-radius: 0.625rem; /* 10px rounded corners */
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1); /* 4px/8px shadow */
+    max-width: 25rem; /* Set max-width to 400px */
+    margin: 0 auto; /* Center the box horizontally */
+    padding: 2rem; /* Add padding inside the box */
+}
+
+/* Adjust for mobile screens */
+@media (max-width: 576px) {
+    .box-container {
+        max-width: 100%; /* Make the box full-width */
+        padding: 1.5rem; /* Reduce padding */
+        border-radius: 0.5rem; /* Slightly smaller rounded corners */
+    }
+
+    .website-name {
+        font-size: 1.5rem; /* Reduce font size */
+        margin-top: 1rem;
+    }
+
+    .logo {
+        max-width: 3rem; /* Smaller logo on mobile */
+    }
+
+    body {
+        padding: 0.5rem; /* Reduce body padding for smaller screens */
+    }
+}
+
+.website-name {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: bold;
+    margin-top: 20px;
+    color: #ffffff;
+}
+
+.logo {
+    max-width: 4rem; /* Adjust the typo from "Rem" to "rem" */
+    height: auto;
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+.custom-btn {
+    background-color: #a04747; /* Custom green color */
+    border-color: #a04747; /* Border color */
+    color: white; /* Text color */
+}
+
