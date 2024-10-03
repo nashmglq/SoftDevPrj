@@ -1,14 +1,18 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Register</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="{% static 'css/register.css' %}">
 </head>
 <body>
-  <div class="container mt-5">
-    <h2>Register</h2>
+
+  <div class="box-container">
+    <h2 class ="text-center">Register</h2>
+    <h4>Create your Account</h4>
 
     {% if form.errors %}
       <div class="alert alert-danger">
@@ -26,17 +30,19 @@
       </div>
     {% endif %}
 
-    <form method="POST">
-      {% csrf_token %}
+    <form method="POST" class="mt-4">
+      {% csrf_token %}  
       {{ form.as_p }}
-      <button type="submit" class="btn btn-primary">Register</button>
+      <div class="text-right mt-3">
+        <button type="submit" class="btn custom-btn">Register</button>
+      </div>
     </form>
-
-    <div>
-      <a href="{% url 'login' %}">Already have an account? Login here</a>
-      <br>
-      Already registered but haven't received a verification email?
-      <a href="{% url 'resend_verification' %}">Resend Verification here</a>
+    <br>
+    <div class="text-center mt-3">
+      <small>Already registered but haven't received a verification email? <a href="{% url 'resend_verification' %}">Resend Verification here</a></small> <br/>
+      <small>Already have an account? <a href="{% url 'login' %}" class="mt-auto">Log in</a></small> 
+      
+      
     </div>
   </div>
 
