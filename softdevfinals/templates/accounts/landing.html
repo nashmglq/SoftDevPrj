@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Landing Page</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/landing.css' %}">
+</head>
+<body>
+    
+
+    <div class="container-fluid d-flex flex-column justify-content-between">
+        <div class="container mt-5">
+            <div class="d-flex justify-content-end mb-5">
+                <a href="register/" class="btn btn-custom">REGISTER</a>
+                <a href="login/" class="btn btn-custom">LOG IN</a>
+            </div>
+            
+            <div class="row align-items-center">
+                <!-- Left Side: Header and Subtext -->
+                <div class="col-md-6">
+                    <h2 id="header">Find Mouthwatering Recipes to Try at Home</h2>
+                    <p class="subtext">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ipsum augue, tincidunt ut arcu id, venenatis efficitur leo.</p>
+                </div>
+
+                <!-- Right Side: Recipe Cards -->
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="recipe-card">
+                                <img src="{% static 'css/strawberry_pancake.png' %}" alt="Strawberry Pancakes" class="recipe-image" />
+                                <h3 class="recipe-title">STRAWBERRY PANCAKES</h3>
+                                <div class="stars">★★★★★</div>
+                                <p class="recipe-description">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ipsum augue, tincidunt.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="recipe-card">
+                                <img src="{% static 'css/chicken_curry.png' %}" alt="Chicken Curry" class="recipe-image" />
+                                <h3 class="recipe-title">CHICKEN CURRY</h3>
+                                <div class="stars">★★★★★</div>
+                                <p class="recipe-description">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ipsum augue, tincidunt.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer text-center text-lg-start" style="background-color: #C15353;">
+            <div class="container d-flex justify-content-center py-5">
+                <button type="button" class="btn btn-primary btn-lg btn-floating mx-2" style="background-color: #54456b;">
+                    <i class="fab fa-facebook-f"></i>
+                </button>
+                <button type="button" class="btn btn-primary btn-lg btn-floating mx-2" style="background-color: #54456b;">
+                    <i class="fab fa-youtube"></i>
+                </button>
+                <button type="button" class="btn btn-primary btn-lg btn-floating mx-2" style="background-color: #54456b;">
+                    <i class="fab fa-instagram"></i>
+                </button>
+                <button type="button" class="btn btn-primary btn-lg btn-floating mx-2" style="background-color: #54456b;">
+                    <i class="fab fa-twitter"></i>
+                </button>
+            </div>
+      
+            <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
+                © 2020 Copyright:
+                <a class="text-white" href="https://mdbootstrap.com/">MDBootstrap.com</a>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

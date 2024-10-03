@@ -338,3 +338,7 @@ def change_password(request):
         form = PasswordChangeForm(request.user)
     
     return render(request, 'accounts/change_password.html', {'form': form})
+
+
+def landing_page(request):
+    return render(request, 'accounts/landing.html') 

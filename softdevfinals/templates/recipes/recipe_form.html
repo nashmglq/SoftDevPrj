@@ -1,13 +1,37 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Recipe</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
     {% load crispy_forms_tags %}
 </head>
 <body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="text-center mb-4"></div>
+        <img src="{% static 'css/logo.png' %}" alt="Logo" class="logo" />
+       </div>
+       <a class="nav-link" href="{% url 'home' %}">Share Mo Lang</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'profile' %}">Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'recipe-create' %}">Create New Recipe</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-danger" href="{% url 'logout' %}">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
     <div class="container mt-5">
         <h2>Create a New Recipe</h2>
         <form method="POST" enctype="multipart/form-data">

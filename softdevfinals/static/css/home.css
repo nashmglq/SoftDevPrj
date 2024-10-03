@@ -1,0 +1,81 @@
+body {
+    background-color: #333; /* Dark background */
+    color: #fff; /* Light text */
+}
+
+.navbar {
+    background-color: #222; /* Darker navbar */
+}
+
+.navbar-brand, .nav-link {
+    color: #fff !important; /* White text for navbar links */
+}
+
+.category-circle {
+    background-color: #555; /* Circle background color */
+    border-radius: 50%; /* Circular shape */
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px;
+}
+
+.category-icon {
+    width: 40px;
+    height: 40px;
+}
+
+.recipe-card {
+    background-color: #444; /* Dark gray for recipe cards */
+    border-radius: 10px;
+    padding: 15px;
+    margin: 15px 0;
+    transition: transform 0.3s;
+    height: 400px; /* Fixed height for the recipe card */
+    display: flex;
+    flex-direction: column; /* Stack elements vertically */
+    justify-content: space-between; /* Space between title, image, and details */
+}
+
+.recipe-card:hover {
+    transform: scale(1.05); /* Slight hover effect */
+}
+
+.btn-info {
+    background-color: #C15353; /* Yellow buttons */
+    border-color: #C15353;
+}
+
+.btn-info:hover {
+    background-color: #C15353; /* Orange on hover */
+    border-color: #C15353;
+}
+
+.list-group-item {
+    background-color: transparent; /* Transparent for list items */
+    border: none; /* Remove borders */
+    color: #fff; /* White text */
+}
+
+.logo {
+    width: 50px; /* Adjust width as needed */
+    height: auto; /* Keeps aspect ratio */
+}
+
+/* Fixed size for recipe images */
+.recipe-image {
+    width: 100%; /* Full width of the card */
+    height: 200px; /* Fixed height for images */
+    object-fit: cover; /* Maintain aspect ratio and cover the area */
+    border-radius: 10px;
+    margin-bottom: 15px; /* Space between image and text */
+}
+
+h5 {
+    height: 50px; /* Fixed height for title to ensure consistency */
+    overflow: hidden; /* Hide overflow text */
+    text-overflow: ellipsis; /* Ellipsis for overflow text */
+    white-space: nowrap; /* Prevent text from wrapping */
+}
