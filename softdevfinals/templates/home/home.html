@@ -108,6 +108,18 @@
             </div>
         </form>
 
+        <div class="text-center mt-4">
+            <h4>Filter by Category:</h4>
+            <a href="{% url 'home' %}?category=Chinese" class="btn btn-secondary">Chinese</a>
+            <a href="{% url 'home' %}?category=American" class="btn btn-secondary">American</a>
+            <a href="{% url 'home' %}?category=Filipino" class="btn btn-secondary">Filipino</a>
+            <a href="{% url 'home' %}?category=Italian" class="btn btn-secondary">Italian</a>
+            <a href="{% url 'home' %}?category=Mexican" class="btn btn-secondary">Mexican</a>
+            <a href="{% url 'home' %}?category=Indian" class="btn btn-secondary">Indian</a>
+            <a href="{% url 'home' %}?category=Japanese" class="btn btn-secondary">Japanese</a>
+            <!-- Add more categories as needed -->
+        </div>
+
         <h3 class="mt-4">Your Recipes</h3>
         <div class="row mt-3">
             {% for recipe in recipes %}

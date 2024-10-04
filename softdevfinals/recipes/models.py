@@ -3,6 +3,17 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 
 class Recipe(models.Model):
+    CATEGORY_CHOICES = [
+        ('Chinese', 'Chinese'),
+        ('American', 'American'),
+        ('Filipino', 'Filipino'),
+        ('Italian', 'Italian'),
+        ('Mexican', 'Mexican'),
+        ('Indian', 'Indian'),
+        ('Japanese', 'Japanese'),
+        # Add more categories as needed
+    ]
+
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     name = models.CharField(max_length=100)
     image = models.ImageField(blank=True, null=True, upload_to='images/')
@@ -14,6 +25,7 @@ class Recipe(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     views = models.ManyToManyField(User, related_name='viewed_recipes', blank=True)
     view_count = models.IntegerField(default=0)
+    category = models.CharField(max_length=100, choices=CATEGORY_CHOICES, blank=True, null=True)
 
     def __str__(self):
         return self.name

@@ -19,7 +19,8 @@ class RecipeListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         search_query = self.request.GET.get('search')
         ingredients_query = self.request.GET.get('fridge')
-        order = self.request.GET.get('order') 
+        order = self.request.GET.get('order')
+        category_filter = self.request.GET.get('category')  # Get the category filter
         queryset = Recipe.objects.all()
 
         # 1 week trending
@@ -36,8 +37,12 @@ class RecipeListView(LoginRequiredMixin, ListView):
                 Q(name__icontains=search_query.lower())
             )
 
+        # Filter by category
+        if category_filter:
+            queryset = queryset.filter(category__iexact=category_filter)  # Case-insensitive filtering
+
         queryset = queryset.annotate(
-            average_rating=Avg('ratings__score'), #get recipe rating
+            average_rating=Avg('ratings__score'),  # Get recipe rating
             views_count=Count('views'),  # Count all views on each recipe
             comments_count=Count('comments', filter=Q(comments__created_at__gte=time_threshold))  # Filter comments last 7 days
         )
@@ -52,21 +57,22 @@ class RecipeListView(LoginRequiredMixin, ListView):
         )
 
         if order == 'highest':
-            queryset = queryset.order_by('-average_rating', '-created_at')  
+            queryset = queryset.order_by('-average_rating', '-created_at')
         elif order == 'lowest':
             queryset = queryset.order_by('average_rating', '-created_at')
         elif order == 'most_views':
             queryset = queryset.order_by('-views_count')
-        elif order == 'trending': 
+        elif order == 'trending':
             queryset = queryset.order_by('-trending_score')
-        elif order == 'newest':  
+        elif order == 'newest':
             queryset = queryset.order_by('-created_at')
-        elif order == 'oldest':  
-              queryset = queryset.order_by('created_at')
+        elif order == 'oldest':
+            queryset = queryset.order_by('created_at')
         else:
-            queryset = queryset.order_by('?')  
+            queryset = queryset.order_by('?')
 
         return queryset
+
 
 class RecipeDetailView(LoginRequiredMixin, DetailView):
     model = Recipe
@@ -164,7 +170,7 @@ class DeleteRatingCommentView(LoginRequiredMixin, View):
 
 class RecipeCreateView(LoginRequiredMixin, CreateView):
     model = Recipe
-    fields = ['name', 'image', 'ingredients', 'minutes', 'calories', 'directions', 'ingredientsList']
+    fields = ['name', 'image', 'ingredients', 'minutes', 'calories', 'directions', 'ingredientsList', 'category']
     #template_name = 'home/recipe_detail.html'  #
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -172,7 +178,7 @@ class RecipeCreateView(LoginRequiredMixin, CreateView):
     
 class RecipeUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Recipe
-    fields = ['name', 'image', 'ingredients', 'minutes', 'calories', 'directions', 'ingredientsList']
+    fields = ['name', 'image', 'ingredients', 'minutes', 'calories', 'directions', 'ingredientsList', 'category']
     def form_valid(self, form):
         form.instance.user = self.request.user
         return super().form_valid(form)
