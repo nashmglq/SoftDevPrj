@@ -341,6 +341,8 @@ def change_password(request):
 
 
 def landing_page(request):
+    if request.user.is_authenticated:
+        return redirect('home')    
     return render(request, 'accounts/landing.html') 
 
 @login_required

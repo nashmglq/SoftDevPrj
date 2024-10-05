@@ -70,19 +70,21 @@
 
     <div class="container mt-5">
         <h2>Welcome, {{ request.user.username }}!</h2>
-        <p>This is your home page.</p>
+        <p>Explore Recipes</p>
         
-        <!-- Categories Section -->
         <div class="text-center mt-4">
-            <a href="{% url 'home' %}?order=trending" class="btn btn-info">Trending Recipes</a>
-            <a href="{% url 'home' %}?order=highest" class="btn btn-info">Most Rated</a>
-            <a href="{% url 'home' %}?order=lowest" class="btn btn-info">Least Rated</a>
-            <a href="{% url 'home' %}" class="btn btn-info">Random</a>
-            <a href="?order=most_views" class="btn btn-info">Most Visited</a>
-            <a href="?order=newest" class="btn btn-info">Newest</a>
-            <a href="?order=oldest" class="btn btn-info">Oldest</a>
-            <a href="{% url 'home' %}" class="btn btn-danger">Remove Filters</a>
+            <a href="{% url 'home' %}?order=trending&category={{ request.GET.category }}" class="btn {% if request.GET.order == 'trending' %}btn-primary{% else %}btn-info{% endif %}">Trending Recipes</a>
+            <a href="{% url 'home' %}?order=highest&category={{ request.GET.category }}" class="btn {% if request.GET.order == 'highest' %}btn-primary{% else %}btn-info{% endif %}">Most Rated</a>
+            <a href="{% url 'home' %}?order=lowest&category={{ request.GET.category }}" class="btn {% if request.GET.order == 'lowest' %}btn-primary{% else %}btn-info{% endif %}">Least Rated</a>
+            <a href="{% url 'home' %}?order=most_views&category={{ request.GET.category }}" class="btn {% if request.GET.order == 'most_views' %}btn-primary{% else %}btn-info{% endif %}">Most Visited</a>
+            <a href="{% url 'home' %}?order=newest&category={{ request.GET.category }}" class="btn {% if request.GET.order == 'newest' %}btn-primary{% else %}btn-info{% endif %}">Newest</a>
+            <a href="{% url 'home' %}?order=oldest&category={{ request.GET.category }}" class="btn {% if request.GET.order == 'oldest' %}btn-primary{% else %}btn-info{% endif %}">Oldest</a>
+            <a href="{% url 'home' %}?category={{ request.GET.category }}" class="btn btn-danger">Random</a>
+            <a href="{% url 'home' %}?order={{ request.GET.order }}" class="btn btn-danger">Remove Filters</a>
+
         </div>
+        
+
 
         <div class="mt-4">
             <button id="normalSearchButton" class="btn btn-info" onclick="setSearchMode('standard')">Normal Search</button>
@@ -92,6 +94,7 @@
         <!-- Standard Recipe Search Form -->
         <form method="GET" action="{% url 'home' %}" id="standardSearchForm" class="mt-4">
             <input type="hidden" name="mode" value="standard">
+            <input type="hidden" name="category" value="{{ request.GET.category }}">
             <div class="input-group">
                 <input type="text" name="search" class="form-control" placeholder="Search recipes..." aria-label="Search recipes">
                 <div class="input-group-append">
@@ -103,6 +106,7 @@
         <!-- Fridge Ingredients Form -->
         <form method="GET" action="{% url 'home' %}" id="fridgeSearchForm" class="mt-4 d-none">
             <input type="hidden" name="mode" value="fridge">
+            <input type="hidden" name="category" value="{{ request.GET.category }}">
             <div class="input-group">
                 <input type="text" name="fridge" class="form-control" placeholder="What's in your fridge? (comma-separated)" aria-label="Fridge ingredients">
                 <div class="input-group-append">
@@ -111,17 +115,16 @@
             </div>
         </form>
 
+
         <div class="text-center mt-4">
             <h4>Filter by Category:</h4>
-            <a href="{% url 'home' %}?category=Chinese" class="btn btn-secondary">Chinese</a>
-            <a href="{% url 'home' %}?category=American" class="btn btn-secondary">American</a>
-            <a href="{% url 'home' %}?category=Filipino" class="btn btn-secondary">Filipino</a>
-            <a href="{% url 'home' %}?category=Italian" class="btn btn-secondary">Italian</a>
-            <a href="{% url 'home' %}?category=Mexican" class="btn btn-secondary">Mexican</a>
-            <a href="{% url 'home' %}?category=Indian" class="btn btn-secondary">Indian</a>
-            <a href="{% url 'home' %}?category=Japanese" class="btn btn-secondary">Japanese</a>
-            <!-- Add more categories as needed -->
+            {% for category in categories %}
+                <a href="{% url 'home' %}?category={{ category.name }}" class="btn {% if request.GET.category == category.name %}btn-primary{% else %}btn-secondary{% endif %}">
+                    {{ category.name }}
+                </a>
+            {% endfor %} 
         </div>
+        
 
         <h3 class="mt-4">Your Recipes</h3>
         <div class="row mt-3">
@@ -156,7 +159,6 @@
         </div>
         
     </div>
-
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

@@ -37,9 +37,8 @@ class RecipeListView(LoginRequiredMixin, ListView):
                 Q(name__icontains=search_query.lower())
             )
 
-        # Filter by category
         if category_filter:
-            queryset = queryset.filter(category__iexact=category_filter)  # Case-insensitive filtering
+            queryset = queryset.filter(category__name__iexact=category_filter) 
 
         queryset = queryset.annotate(
             average_rating=Avg('ratings__score'),  # Get recipe rating
@@ -72,7 +71,12 @@ class RecipeListView(LoginRequiredMixin, ListView):
             queryset = queryset.order_by('?')
 
         return queryset
-
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['categories'] = Category.objects.all().order_by('name')  # Sort categories alphabetically
+        context['recommended_recipes'] = Recipe.get_recommendations(self.request.user)  # Get recommendations
+        return context
 
 class RecipeDetailView(LoginRequiredMixin, DetailView):
     model = Recipe
@@ -172,9 +176,17 @@ class RecipeCreateView(LoginRequiredMixin, CreateView):
     model = Recipe
     fields = ['name', 'image', 'ingredients', 'minutes', 'calories', 'directions', 'ingredientsList', 'category']
     #template_name = 'home/recipe_detail.html'  #
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        # Sort the categories alphabetically
+        form.fields['category'].queryset = Category.objects.all().order_by('name')
+        return form
+
     def form_valid(self, form):
         form.instance.user = self.request.user
         return super().form_valid(form)
+
     
 class RecipeUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Recipe

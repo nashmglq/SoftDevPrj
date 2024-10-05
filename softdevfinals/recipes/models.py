@@ -1,19 +1,17 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
+from django.db.models import Q
+
+
+
+class Category(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.name
 
 class Recipe(models.Model):
-    CATEGORY_CHOICES = [
-        ('Chinese', 'Chinese'),
-        ('American', 'American'),
-        ('Filipino', 'Filipino'),
-        ('Italian', 'Italian'),
-        ('Mexican', 'Mexican'),
-        ('Indian', 'Indian'),
-        ('Japanese', 'Japanese'),
-        # Add more categories as needed
-    ]
-
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     name = models.CharField(max_length=100)
     image = models.ImageField(blank=True, null=True, upload_to='images/')
@@ -25,7 +23,7 @@ class Recipe(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     views = models.ManyToManyField(User, related_name='viewed_recipes', blank=True)
     view_count = models.IntegerField(default=0)
-    category = models.CharField(max_length=100, choices=CATEGORY_CHOICES, blank=True, null=True)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=False)
     favorites = models.ManyToManyField(User, related_name='favorite_recipes', blank=True)
 
     def __str__(self):
@@ -33,6 +31,24 @@ class Recipe(models.Model):
 
     def get_absolute_url(self):
         return reverse('recipe-detail', kwargs={'pk': self.pk})
+    
+    @classmethod
+    def get_recommendations(cls, user):
+        # Get the user's favorite recipes
+        favorite_recipes = user.favorite_recipes.all()
+
+        if not favorite_recipes.exists():
+            return cls.objects.none()  # Return empty if no favorites
+
+        # Get the categories of the user's favorite recipes
+        favorite_categories = favorite_recipes.values_list('category', flat=True).distinct()
+
+        # Return recipes that belong to the same categories but are not in the user's favorites
+        recommended_recipes = cls.objects.filter(
+            Q(category__in=favorite_categories) & ~Q(id__in=favorite_recipes)
+        ).distinct()
+
+        return recommended_recipes
 
 
 class Comment(models.Model):
@@ -52,3 +68,6 @@ class Rating(models.Model):
 
     class Meta:
         unique_together = ('recipe', 'user') 
+
+
+
