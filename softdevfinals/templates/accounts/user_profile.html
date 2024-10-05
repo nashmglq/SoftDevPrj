@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+{% load crispy_forms_tags %}
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ user.username }}'s Profile</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <img src="{% static 'css/logo.png' %}" alt="Logo" class="logo" />
+        <a class="nav-link" href="{% url 'home' %}">Share Mo lang</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'profile' %}">My Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'recipe-create' %}">Create New Recipe</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-danger" href="{% url 'logout' %}">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <h1>{{ user.username }}</h1>
+    <img src="{{ user.profile.image.url }}" style="max-width: 100px;" alt="{{ user.username }}'s Profile Picture">
+    
+    {% if user.profile.bio %}
+        <h2>{{ user.profile.bio }}</h2>
+    {% else %}
+        <h2>No bio yet</h2>
+    {% endif %}
+
+    <!-- Display user's recipes -->
+    <h3>Recipes by {{ user.username }}:</h3>
+    <ul class="list-group">
+        {% for recipe in user_recipes %}
+        <li class="list-group-item">
+            <h5>{{ recipe.name }}</h5>
+            {% if recipe.image %}
+                <a href="{% url 'recipe-detail' recipe.id %}">
+                    <img src="{{ recipe.image.url }}" alt="{{ recipe.name }}" style="max-width: 100px;">
+                </a>
+            {% endif %}
+            <p><strong>Ingredients:</strong> {{ recipe.ingredients }}</p>
+            <p><strong>Cooking Time:</strong> {{ recipe.minutes }} minutes</p>
+            <p><strong>Created By:</strong> {{ recipe.user.username }}</p>
+
+            <!-- Display the average rating -->
+            {% if recipe.average_rating %}
+                <p><strong>Average Rating:</strong> {{ recipe.average_rating|floatformat:1 }} / 5</p>
+            {% else %}
+                <p><strong>Average Rating:</strong> No ratings yet</p>
+            {% endif %}
+        </li>
+        {% empty %}
+            <li class="list-group-item">No recipes yet.</li>
+        {% endfor %}
+    </ul>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

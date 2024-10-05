@@ -20,7 +20,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth import password_validation
 from django.contrib.auth.decorators import login_required
 from recipes.models import Recipe
-
+from django.shortcuts import get_object_or_404
 
 def register(request):
     if request.user.is_authenticated:
@@ -342,3 +342,16 @@ def change_password(request):
 
 def landing_page(request):
     return render(request, 'accounts/landing.html') 
+
+@login_required
+def user_profile(request, user_id):
+    # Get the user object for the specified user_id
+    user = get_object_or_404(User, id=user_id)
+    user_recipes = Recipe.objects.filter(user=user)  # Get recipes created by this user
+
+    context = {
+        'user': user,
+        'user_recipes': user_recipes,
+    }
+    
+    return render(request, 'accounts/user_profile.html', context)
