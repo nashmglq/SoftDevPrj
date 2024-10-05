@@ -48,7 +48,7 @@
                     {% else %}
                         <form action="{% url 'add_favorite' recipe.pk %}" method="post">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-primary">Add to Favorites</button>
+                            <button type="submit" class="btn custom-btn">Add to Favorites</button>
                         </form>
             {% endif %}
             </div>

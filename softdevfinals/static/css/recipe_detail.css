@@ -96,5 +96,18 @@ body {
     }
 }
 
+.custom-btn {
+    background-color: #eedf7a; /* Custom green color */
+    border-color: #eedf7a; /* Border color */
+    color: black; /* Text color */
+}
+
+.custom-btn-after {
+    background-color: #a04747; /* Custom green color */
+    border-color: #a04747; /* Border color */
+    color: white; /* Text color */
+}
+
+
 
 
