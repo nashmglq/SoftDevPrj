@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Favorites</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="text-center mb-4"></div>
+        <img src="{% static 'css/logo.png' %}" alt="Logo" class="logo" />
+        <a class="nav-link" href="{% url 'home' %}">Share Mo Lang</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'profile' %}">Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'recipe-create' %}">Create New Recipe</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-danger" href="{% url 'logout' %}">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h2>Your Favorite Recipes</h2>
+        <p>This is your favorites page.</p>
+
+        <div class="row mt-3">
+            {% for recipe in favorite_recipes %}
+                <div class="col-md-4">
+                    <div class="recipe-card">
+                        {% if recipe.image %}
+                            <a href="{% url 'recipe-detail' recipe.pk %}">
+                                <img src="{{ recipe.image.url }}" alt="{{ recipe.name }}" class="img-fluid recipe-image">
+                            </a>
+                        {% endif %}
+                        <h5>
+                            <a href="{% url 'recipe-detail' recipe.pk %}">{{ recipe.name }}</a>
+                        </h5>
+                        <form action="{% url 'remove_favorite' recipe.pk %}" method="post" style="display:inline;" onsubmit="handleRemove(event, this);">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="event.stopPropagation();">Remove</button>
+                        </form>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <p>No favorite recipes found.</p>
+                </div>
+            {% endfor %}
+        </div>
+        
+    </div>
+    <script>
+        function handleRemove(event, form) {
+            event.preventDefault(); // Prevent the default form submission
+            fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}' // Include CSRF token
+                },
+                body: new URLSearchParams(new FormData(form)) // Send the form data
+            }).then(response => {
+                if (response.ok) {
+                    // Refresh the page after successful removal
+                    location.reload();
+                }
+            }).catch(error => {
+                console.error('Error removing favorite:', error);
+            });
+        }
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

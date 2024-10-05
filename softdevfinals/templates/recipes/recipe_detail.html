@@ -31,6 +31,17 @@
                 <p>{{ object.user.profile.bio }}</p>
             </div>
         </div>
+        {% if request.user in recipe.favorites.all %}
+            <form action="{% url 'remove_favorite' recipe.pk %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Remove from Favorites</button>
+            </form>
+                {% else %}
+                    <form action="{% url 'add_favorite' recipe.pk %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary">Add to Favorites</button>
+                    </form>
+        {% endif %}
         
         <div>
             {% if object.image %}

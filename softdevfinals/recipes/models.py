@@ -26,6 +26,7 @@ class Recipe(models.Model):
     views = models.ManyToManyField(User, related_name='viewed_recipes', blank=True)
     view_count = models.IntegerField(default=0)
     category = models.CharField(max_length=100, choices=CATEGORY_CHOICES, blank=True, null=True)
+    favorites = models.ManyToManyField(User, related_name='favorite_recipes', blank=True)
 
     def __str__(self):
         return self.name

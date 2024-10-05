@@ -204,4 +204,24 @@ def home(request):
     }
     return render(request, 'home/home.html', context)
 
+class AddFavoriteView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        recipe = get_object_or_404(Recipe, pk=pk)
+        recipe.favorites.add(request.user)
+        return redirect(recipe.get_absolute_url())
+
+class RemoveFavoriteView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        recipe = get_object_or_404(Recipe, pk=pk)
+        recipe.favorites.remove(request.user)
+        return redirect(recipe.get_absolute_url())
+
+class FavoriteListView(LoginRequiredMixin, ListView):
+    model = Recipe
+    template_name = 'recipes/favorites.html'
+    context_object_name = 'favorite_recipes'
+
+    def get_queryset(self):
+        return self.request.user.favorite_recipes.all()
+
 
