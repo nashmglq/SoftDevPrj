@@ -1,0 +1,73 @@
+.image {
+    max-width: 15rem; 
+    margin-bottom: 1rem; 
+    border-radius: .2rem;
+}
+
+.custom-card {
+    background-color: #d8a25e !important;  /* Custom background color */
+    border: none; /* Remove default border */
+    border-radius: 1rem !important; /* Rounded corners */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.custom-card img {
+    border-radius: 10px; /* Match image corners to card */
+}
+
+.custom-card .card-title {
+    color: #f6e7d8; /* Title text color */
+}
+
+.custom-card .card-text {
+    color: #a04747; /* Bio text color */
+    font-weight: 600;
+
+}
+
+.custom-btn {
+    background-color: #a04747 !important;
+    border-color: #a04747 !important;
+    color: white !important;
+    font-weight: 600 !important;
+    transition: transform 0.2s; /* Transition for hover effect */
+}
+
+.custom-recipe-card {
+    background-color: #282727 !important; /* Card background color */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    transition: transform 0.2s; /* Transition for hover effect */
+    color: #a04747;
+}
+
+.custom-recipe-card:hover {
+    transform: scale(1.05); /* Slightly enlarge the card on hover */
+}
+
+.custom-recipe-card img {
+    border-radius: .5rem; /* Ensure image matches the card corner radius */
+}
+
+@media (max-width: 576px) {
+    .ml-4 {
+        margin-left: 0; /* Remove left margin on small screens */
+        margin-top: 1rem; /* Add top margin */
+    }
+}
+
+.box-container {
+    background-color: #f8f9fa; /* Light grey background */
+    border: 0.0625rem solid #dee2e6; /* 1px solid border */
+    border-radius: 0.625rem; /* 10px rounded corners */
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1); /* 4px/8px shadow */
+    max-width: 25rem; /* Set max-width to 400px */
+    margin: 0 auto; /* Center the box horizontally */
+    padding: 2rem; /* Add padding inside the box */
+}
+
+.full-height {
+    min-height: 50rem;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}

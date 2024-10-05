@@ -3,19 +3,6 @@ body {
     color: #f6e7d8; /* Light text */
 }
 
-.navbar {
-    background-color: #222; /* Darker navbar */
-}
-
-.navbar-brand, .nav-link {
-    color: #f6e7d8 !important; /* White text for navbar links */
-}
-
-.logo {
-    width: 50px; /* Adjust width as needed */
-    height: auto; /* Keeps aspect ratio */
-}
-
 .image {
     width: 100%; /* Full width of the card */
     height: auto; /* Maintain aspect ratio */
@@ -97,9 +84,10 @@ body {
 }
 
 .custom-btn {
-    background-color: #eedf7a; /* Custom green color */
-    border-color: #eedf7a; /* Border color */
+    background-color: #eedf7a !important; /* Custom green color */
+    border-color: #eedf7a !important; /* Border color */
     color: black; /* Text color */
+    font-weight: 600 !important;
 }
 
 .custom-btn-after {

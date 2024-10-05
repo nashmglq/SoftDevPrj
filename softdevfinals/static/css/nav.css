@@ -1,0 +1,18 @@
+body {
+    background-color: #343131; /* Dark background */
+    color: #f6e7d8; /* Light text */
+}
+
+.navbar {
+    background-color: #222; /* Darker navbar */
+    width: 100%;
+}
+
+.navbar-brand, .nav-link {
+    color: #fff !important; /* White text for navbar links */
+}
+
+.logo {
+    width: 50px; /* Adjust width as needed */
+    height: auto; /* Keeps aspect ratio */
+}

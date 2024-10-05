@@ -1,22 +1,30 @@
 <!DOCTYPE html>
 {% load crispy_forms_tags %}
 <html lang="en">
+{% load static %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Update Profile</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}">
 </head>
 <body>
-    <a href="{% url 'profile' %}" class="btn btn-danger">Go back</a>
-    <h2>Update Profile</h2>
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ p_form.as_p }}
-        <button type="submit">Update</button>
-    </form>
+    {% include 'nav.html' %}
+    <div class="container-fluid full-height">
+        <div class="box-container p-4 mt-4">
+            <h3 style="color: black;">Update Profile</h3>
+            <form method="POST" enctype="multipart/form-data" class="form" style="color: black;">
+                {% csrf_token %}
+                {{ p_form.as_p }}
+                <div class="d-flex justify-content-between mt-3">
+                    <a href="{% url 'profile' %}" class="btn btn-danger" style="font-weight: bold;">Go back</a>
+                    <button type="submit" class="btn custom-btn">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-        
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

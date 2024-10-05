@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 {% load static %}
 <html lang="en">
-    
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,21 +8,22 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{% static 'css/recipe_confirm_delete.css' %}">
     {% load crispy_forms_tags %}
-    
+
 </head>
 <body>
-    <div class="box-container p-4 mt-4">
-        <h3>Delete Post</h3>
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <p>Are you Sure you Want to delete your recipe "{{object.name}}"?</p>
-            <div style="text-align: center;">
-                <button type="submit" class="btn btn-outline-danger">Delete</button>
-                <a class="btn btn-primary" href="{% url 'recipe-detail' object.id %}">Cancel</a>
-            </div>
-            
 
-        </form>
+    <div class="container mt-4">  <!-- Use Bootstrap's container class for padding -->
+        <div class="box-container p-4">
+            <h3>Delete Post</h3>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <p>Are you sure you want to delete your recipe "{{ object.name }}"?</p>
+                <div style="text-align: center;">
+                    <button type="submit" class="btn btn-outline-danger">Delete</button>
+                    <a class="btn btn-primary" href="{% url 'recipe-detail' object.id %}">Cancel</a>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
