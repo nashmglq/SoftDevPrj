@@ -23,8 +23,17 @@ from recipes.models import Recipe
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError 
 from django.core import validators 
+<<<<<<< HEAD
 from django.contrib.auth.decorators import user_passes_test
 
+=======
+from recipes.views import RecipeListView
+from recipes.models import Recipe
+from django.db.models import Q, Avg, Count, Case, When, IntegerField
+from datetime import timedelta
+from django.utils import timezone
+import random
+>>>>>>> 57fff83b0b97e57ba211d72bcdcd871964908294
 def register(request):
     if request.user.is_authenticated:
         return redirect('home')  
@@ -354,11 +363,30 @@ def change_password(request):
     return render(request, 'accounts/change_password.html', {'form': form})
 
 
+
 def landing_page(request):
     if request.user.is_authenticated:
-        return redirect('home')    
-    return render(request, 'accounts/landing.html') 
+        return redirect('home')
 
+    # Define a time threshold for recent comments (e.g., last 30 days)
+    time_threshold = timezone.now() - timedelta(days=30)
+
+    # Fetch the top 5 trending recipes with annotations
+    queryset = Recipe.objects.all().annotate(
+        average_rating=Avg('ratings__score'),
+        views_count=Count('views'),
+        comments_count=Count('comments', filter=Q(comments__created_at__gte=time_threshold)),
+        trending_score=(
+            Count('views') * 1 + 
+            Count('comments', filter=Q(comments__created_at__gte=time_threshold)) * 2 + 
+            Avg('ratings__score') * 3
+        )
+    ).order_by('-trending_score')[:5]  # Get the top 5 trending recipes
+
+    # Randomly select 2 recipes from the top 5
+    trending_recipes = random.sample(list(queryset), k=min(2, len(queryset)))
+
+    return render(request, 'accounts/landing.html', {'trending_recipes': trending_recipes})
 @login_required
 def user_profile(request, user_id):
     # Get the user object for the specified user_id
