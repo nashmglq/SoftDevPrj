@@ -8,20 +8,103 @@
     <title>Update Profile</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
 </head>
 <body>
-    {% include 'nav.html' %}
+    <nav class="navbar navbar-expand-lg">
+        <div class="text-center mb-4"></div>
+        <a href="{% url 'home' %}" class="d-flex align-items-center text-decoration-none">
+            <img src="/static/css/logo.png" alt="Logo" class="logo" />
+            <span class="nav-link ml-2">Share Mo Lang</span>
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'favorites' %}">Favorites</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'profile' %}">Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'recipe-create' %}">Create New Recipe</a>
+                </li>
+    
+                {% if user.is_superuser %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'user-list' %}">User List</a>
+                </li>
+                {% endif %}
+    
+                <li class="nav-item">
+                    <a class="nav-link text-danger" href="{% url 'logout' %}">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
     <div class="container-fluid full-height">
-        <div class="box-container p-4 mt-4">
-            <h3 style="color: black;">Update Profile</h3>
-            <form method="POST" enctype="multipart/form-data" class="form" style="color: black;">
-                {% csrf_token %}
-                {{ p_form.as_p }}
-                <div class="d-flex justify-content-between mt-3">
-                    <a href="{% url 'profile' %}" class="btn btn-danger" style="font-weight: bold;">Go back</a>
-                    <button type="submit" class="btn custom-btn">Update</button>
+        <div class="d-flex justify-content-center mt-4">
+            <div class="card shadow-lg" style="width: 100%; max-width: 600px;">
+                <div class="card-header text-center" style="background-color: #a04747; color: white;">
+                    <h3>Update Profile</h3>
                 </div>
-            </form>
+                
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data" class="form" style="color: black;">
+                        {% csrf_token %}
+                        
+                        <!-- User Information Section -->
+                        <div class="mb-4">
+                            <h4>User Information</h4>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="{{ u_form.username.id_for_label }}">Username</label>
+                                        {{ u_form.username }}
+                                        {% for error in u_form.username.errors %}
+                                            <div class="text-danger">{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Profile Information Section -->
+                        <div class="mb-4">
+                            <h4>Profile Information</h4>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="{{ p_form.bio.id_for_label }}">Bio</label>
+                                        {{ p_form.bio }}
+                                        {% for error in p_form.bio.errors %}
+                                            <div class="text-danger">{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="{{ p_form.image.id_for_label }}">Profile Image</label>
+                                        {{ p_form.image }}
+                                        {% for error in p_form.image.errors %}
+                                            <div class="text-danger">{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-3">
+                            <a href="{% url 'profile' %}" class="btn btn-danger" style="font-weight: bold;">Go back</a>
+                            <button type="submit" class="btn btn-primary">Update</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 

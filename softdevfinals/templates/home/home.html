@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
     <script>
         function setSearchMode(mode) {
@@ -41,12 +42,14 @@
         };
     </script>
 </head>
-<body>
+<body>   
     <nav class="navbar navbar-expand-lg">
         <div class="text-center mb-4"></div>
-        <img src="{% static 'css/logo.png' %}" alt="Logo" class="logo" />
-       </div>
-       <a class="nav-link" href="{% url 'home' %}">Share Mo Lang</a>
+        <a href="{% url 'home' %}" class="d-flex align-items-center text-decoration-none">
+            <img src="/static/css/logo.png" alt="Logo" class="logo" />
+            <span class="nav-link ml-2">Share Mo Lang</span>
+        </a>
+        
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -61,13 +64,20 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'recipe-create' %}">Create New Recipe</a>
                 </li>
+    
+                {% if user.is_superuser %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'user-list' %}">User List</a>
+                </li>
+                {% endif %}
+    
                 <li class="nav-item">
                     <a class="nav-link text-danger" href="{% url 'logout' %}">Logout</a>
                 </li>
             </ul>
         </div>
     </nav>
-
+    
     <div class="container mt-5">
         
 
@@ -110,44 +120,65 @@
         </div>
         
 
-                
-        <div class="text-center mt-4">
-            <a href="{% url 'home' %}?order=trending&category={{ request.GET.category }}" class="btn {% if request.GET.order == 'trending' %}btn-primary{% else %}btn-info{% endif %}">Trending Recipes</a>
-            <a href="{% url 'home' %}?order=highest&category={{ request.GET.category }}" class="btn {% if request.GET.order == 'highest' %}btn-primary{% else %}btn-info{% endif %}">Most Rated</a>
-            <a href="{% url 'home' %}?order=lowest&category={{ request.GET.category }}" class="btn {% if request.GET.order == 'lowest' %}btn-primary{% else %}btn-info{% endif %}">Least Rated</a>
-            <a href="{% url 'home' %}?order=most_views&category={{ request.GET.category }}" class="btn {% if request.GET.order == 'most_views' %}btn-primary{% else %}btn-info{% endif %}">Most Visited</a>
-            <a href="{% url 'home' %}?order=newest&category={{ request.GET.category }}" class="btn {% if request.GET.order == 'newest' %}btn-primary{% else %}btn-info{% endif %}">Newest</a>
-            <a href="{% url 'home' %}?order=oldest&category={{ request.GET.category }}" class="btn {% if request.GET.order == 'oldest' %}btn-primary{% else %}btn-info{% endif %}">Oldest</a>
-            <a href="{% url 'home' %}??order=random&category={{ request.GET.category }}" class="btn btn-danger">Random</a>
-            <a href="{% url 'home' %}" class="btn btn-danger">Remove Filters</a>
+        <div class="container mt-4">
+            <div class="d-flex flex-wrap justify-content-center">
+                <a href="{% url 'home' %}?order=trending&category={{ request.GET.category }}" class="btn {% if request.GET.order == 'trending' %}btn-primary{% else %}btn-info{% endif %} m-1" style="width: 120px;">Trending</a>
+                <a href="{% url 'home' %}?order=highest&category={{ request.GET.category }}" class="btn {% if request.GET.order == 'highest' %}btn-primary{% else %}btn-info{% endif %} m-1" style="width: 120px;">Most Rated</a>
+                <a href="{% url 'home' %}?order=lowest&category={{ request.GET.category }}" class="btn {% if request.GET.order == 'lowest' %}btn-primary{% else %}btn-info{% endif %} m-1" style="width: 120px;">Least Rated</a>
+                <a href="{% url 'home' %}?order=most_views&category={{ request.GET.category }}" class="btn {% if request.GET.order == 'most_views' %}btn-primary{% else %}btn-info{% endif %} m-1" style="width: 120px;">Most Visited</a>
+                <a href="{% url 'home' %}?order=newest&category={{ request.GET.category }}" class="btn {% if request.GET.order == 'newest' %}btn-primary{% else %}btn-info{% endif %} m-1" style="width: 120px;">Newest</a>
+                <a href="{% url 'home' %}?order=oldest&category={{ request.GET.category }}" class="btn {% if request.GET.order == 'oldest' %}btn-primary{% else %}btn-info{% endif %} m-1" style="width: 120px;">Oldest</a>
+                <a href="{% url 'home' %}?order=random&category={{ request.GET.category }}" class="btn btn-danger m-1" style="width: 120px;">Random</a>
+                <a href="{% url 'home' %}" class="btn btn-danger m-1" style="width: 120px;">Remove</a>
+            </div>
         </div>
-
-
+        
 
         <h3 class="mt-4">Your Recipes</h3>
         <div class="row mt-3">
             {% for recipe in recipes %}
-                <div class="col-md-4">
-                    <div class="recipe-card">
-                        <h5>{{ recipe.name }}</h5>
-                        {% if recipe.image %}
-                            <a href="{% url 'recipe-detail' recipe.id %}">
-                                <img src="{{ recipe.image.url }}" alt="{{ recipe.name }}" class="img-fluid recipe-image">
-                            </a>
-                        {% endif %}
-                        <p><strong>Ingredients:</strong> {{ recipe.ingredients }}</p>
-                        <p><strong>Cooking Time:</strong> {{ recipe.minutes }} minutes</p>
-                        {% if recipe.user %}
-                            <p><strong>Created By:</strong> {{ recipe.user.username }}</p>
-                        {% else %}
-                            <p><strong>Created By:</strong> Unknown</p>
-                        {% endif %}
-                        {% if recipe.average_rating %}
-                            <p><strong>Average Rating:</strong> {{ recipe.average_rating|floatformat:1 }} / 5</p>
-                        {% else %}
-                            <p><strong>Average Rating:</strong> No ratings yet</p>
-                        {% endif %}
-                    </div>
+                <div class="col-md-4 mb-4"> <!-- Added mb-4 for spacing between rows -->
+                    <a href="{% url 'recipe-detail' recipe.id %}" class="text-decoration-none text-reset"> <!-- Full card as a link -->
+                        <div class="card recipe-card h-100"> <!-- Set h-100 for full height -->
+                            <div class="card-body d-flex flex-column justify-content-between">
+                                <h5 class="card-title">{{ recipe.name }}</h5>  <!-- Recipe Name -->
+                                
+                                {% if recipe.image %}
+                                    <img src="{{ recipe.image.url }}" alt="{{ recipe.name }}" class="img-fluid recipe-image card-img-top">
+                                {% endif %}
+                                
+                                {% if recipe.user %}
+                                    <div class="d-flex align-items-center mt-3"> <!-- Name of Poster and Profile Image -->
+                                        <img src="{{ recipe.user.profile.image.url }}" alt="{{ recipe.user.username }}" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover; margin-right: 10px;">
+                                        <strong>{{ recipe.user.username }}</strong>
+                                    </div>
+                                {% else %}
+                                    <p><strong>Created By:</strong> Unknown</p>
+                                {% endif %}
+                                
+                                <p class="mt-2 mb-3"><strong>Number of Ingredients:</strong> {{ recipe.ingredients }}</p>  <!-- Number of Ingredients -->
+
+                                <p><strong>Cooking Time:</strong> {{ recipe.minutes }} minutes</p>  <!-- Cooking Time -->
+                                {% if recipe.average_rating %}
+                                <h7 class="card-title d-flex align-items-center">Ratings: 
+                                    <div class="rating-star d-flex align-items-center ml-2">
+                                        <span>
+                                            <i class="fas fa-star{% if recipe.average_rating == 0.5 %}-half-alt{% endif %} text-warning" aria-hidden="true"></i>
+                                            <i class="fas fa-star{% if recipe.average_rating == 1.5 %}-half-alt{% endif %} text-warning" aria-hidden="true"></i>
+                                            <i class="fas fa-star{% if recipe.average_rating == 2.5 %}-half-alt{% endif %} text-warning" aria-hidden="true"></i>
+                                            <i class="fas fa-star{% if recipe.average_rating == 3.5 %}-half-alt{% endif %} text-warning" aria-hidden="true"></i>
+                                            <i class="fas fa-star{% if recipe.average_rating == 4.5 %}-half-alt{% endif %} text-warning" aria-hidden="true"></i>
+                                        </span>
+                                        <span class="ml-2">({{ recipe.average_rating|floatformat:1 }})</span>
+                                    </div>
+                                </h7>
+                            {% else %}
+                                <p>No ratings yet</p>
+                            {% endif %}
+                            
+                            </div>
+                        </div>
+                    </a>
                 </div>
             {% empty %}
                 <div class="col-12">
@@ -155,6 +186,9 @@
                 </div>
             {% endfor %}
         </div>
+        
+        
+        
         
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

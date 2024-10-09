@@ -46,16 +46,22 @@ class CustomUserCreationForm(UserCreationForm):
 
 
 class UserUpdateForm(forms.ModelForm):
-    email = forms.EmailField(
-        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Enter your email'})
-    )
-
     class Meta:
         model = User
-        fields = ['username', 'email']
+        fields = ['username'] 
         widgets = {
-            'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter your username'}),
+            'username': forms.TextInput(attrs={
+                'class': 'form-control', 
+                'placeholder': 'Enter your username',
+                'required': 'true'  # Ensures the field is required
+            }),
         }
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if User.objects.exclude(pk=self.instance.pk).filter(username=username).exists():
+            raise forms.ValidationError("This username is already taken.")
+        return username
 
 
 class ProfileUpdateForm(forms.ModelForm):
@@ -63,8 +69,21 @@ class ProfileUpdateForm(forms.ModelForm):
         model = Profile
         fields = ['image', 'bio']
         widgets = {
-            'bio': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Enter a short bio'}),
+            'bio': forms.Textarea(attrs={
+                'class': 'form-control', 
+                'placeholder': 'Enter a short bio',
+                'rows': 3,  # Customize the height of the textarea
+            }),
+            'image': forms.ClearableFileInput(attrs={
+                'class': 'form-control-file' 
+            }),
         }
+
+    def clean_bio(self):
+        bio = self.cleaned_data.get('bio')
+        if len(bio) > 500:  # Example validation for bio length
+            raise forms.ValidationError("Bio must be 500 characters or less.")
+        return bio
 
 
 class ContactForm(forms.Form):

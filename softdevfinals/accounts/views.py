@@ -23,6 +23,7 @@ from recipes.models import Recipe
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError 
 from django.core import validators 
+from django.contrib.auth.decorators import user_passes_test
 
 def register(request):
     if request.user.is_authenticated:
@@ -269,34 +270,23 @@ def profile(request):
     return render(request, 'accounts/profile.html', context)
 
 @login_required
-def update_user(request):
+def update_user_profile(request):
     if request.method == 'POST':
         u_form = UserUpdateForm(request.POST, instance=request.user)
-        if u_form.is_valid():
+        p_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
+        
+        if u_form.is_valid() and p_form.is_valid():
             u_form.save()
-            messages.success(request, 'Your user information has been updated!')
+            p_form.save()
+            messages.success(request, 'Your information has been updated!')
             return redirect('profile')
     else:
         u_form = UserUpdateForm(instance=request.user)
-
-    context = {
-        'u_form': u_form
-    }
-    return render(request, 'accounts/profile_edit_user.html', context)
-
-@login_required
-def update_profile(request):
-    if request.method == 'POST':
-        p_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
-        if p_form.is_valid():
-            p_form.save()
-            messages.success(request, 'Your profile has been updated!')
-            return redirect('profile')
-    else:
         p_form = ProfileUpdateForm(instance=request.user.profile)
 
     context = {
-        'p_form': p_form
+        'u_form': u_form,
+        'p_form': p_form,
     }
     return render(request, 'accounts/profile_edit_profile.html', context)
 
@@ -381,3 +371,66 @@ def user_profile(request, user_id):
     }
     
     return render(request, 'accounts/user_profile.html', context)
+
+
+
+# Admin Pannel
+
+def is_superuser_check(user):
+    if not user.is_superuser:
+        return False
+    return True
+
+# Decorator for superuser check with redirect
+@user_passes_test(lambda u: u.is_superuser)
+def user_list(request):
+    query = request.GET.get('q', '')  # Get search query from the request
+    if query:
+        users = User.objects.filter(username__icontains=query)  # Filter users by username
+    else:
+        users = User.objects.all()  # Get all users if no query
+
+    context = {
+        'users': users,
+        'query': query,
+    }
+    return render(request, 'admin/user_list.html', context)
+
+@user_passes_test(lambda u: u.is_superuser)
+def edit_user(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    if request.method == 'POST':
+        username = request.POST['username']
+        email = request.POST['email']  # Get the email from the form
+        is_active = request.POST.get('is_active', 'off') == 'on'
+        is_superuser = request.POST.get('is_superuser', 'off') == 'on'
+        is_staff = request.POST.get('is_staff', 'off') == 'on'  # Add is_staff handling
+
+        user.username = username
+        user.email = email  # Update the email
+        user.is_active = is_active
+        user.is_superuser = is_superuser
+        user.is_staff = is_staff  # Update is_staff as well
+        user.save()
+
+        messages.success(request, 'User updated successfully')
+        return redirect('user-list')
+
+    context = {
+        'user': user,
+    }
+    return render(request, 'admin/edit_user.html', context)
+
+
+@user_passes_test(lambda u: u.is_superuser)
+def delete_user(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    if request.method == 'POST':
+        user.delete()
+        messages.success(request, 'User deleted successfully')
+        return redirect('user-list')
+
+    context = {
+        'user': user,
+    }
+    return render(request, 'admin/delete_user.html', context)

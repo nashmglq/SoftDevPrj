@@ -8,15 +8,47 @@
     <title>Profile</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
 </head>
 <body>
-    {% include 'nav.html' %}
-
-    <div class="container mt-5" style="max-width: 100%; width: 55%;">
+    <nav class="navbar navbar-expand-lg">
+        <div class="text-center mb-4"></div>
+        <a href="{% url 'home' %}" class="d-flex align-items-center text-decoration-none">
+            <img src="/static/css/logo.png" alt="Logo" class="logo" />
+            <span class="nav-link ml-2">Share Mo Lang</span>
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'favorites' %}">Favorites</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'profile' %}">Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'recipe-create' %}">Create New Recipe</a>
+                </li>
+    
+                {% if user.is_superuser %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'user-list' %}">User List</a>
+                </li>
+                {% endif %}
+    
+                <li class="nav-item">
+                    <a class="nav-link text-danger" href="{% url 'logout' %}">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container mt-5" >
         <div class="row d-flex align-items-center">
-            <div class="col-12 col-md-9 d-flex align-items-start flex-column flex-md-row"> <!-- Stack on mobile -->
-                <!-- Custom Card for Profile Information -->
-                <div class="card custom-card w-100 mb-3"> <!-- Add margin bottom for spacing -->
+            <div class="col-md-8 d-flex align-items-start flex-column flex-md-row">
+                <div class="card custom-card w-100 mb-3">
                     <div class="card-body d-flex align-items-start">
                         <!-- Picture -->
                         <div class="profile-image">
@@ -36,50 +68,63 @@
             </div>   
             <div class="col-sm-3">
                 <div class="mt-3">
-                    <a href="{% url 'update_user' %}" class="btn custom-btn w-100 mb-2">Edit Information</a>
-                    <a href="{% url 'update_profile' %}" class="btn custom-btn w-100 mb-2">Edit Profile</a>
+                    <a href="{% url 'update_user_profile' %}" class="btn custom-btn w-100 mb-2">Edit Information</a>
                     <a href="{% url 'change_password' %}" class="btn custom-btn w-100 mb-2">Change Password</a>
                 </div>
             </div>
         </div>
 
-        <!-- Display user's recipes -->
-        <div style="margin-top: 2rem;">
-            <div class="row mt-3">
-                {% for recipe in user_recipes %}
-                    <div class="col-12 col-md-4 mb-3">
-                        <div class="card custom-recipe-card w-100" style="border-radius: .5rem;">
-                            <div class="card-body">
-                                <!-- Recipe Name -->
-                                <h3 class="mb-2 text-center card-title">{{ recipe.name }}</h3>
-                                <!-- Recipe Picture -->
-                                {% if recipe.image %}
-                                    <a href="{% url 'recipe-detail' recipe.id %}">
-                                        <img src="{{ recipe.image.url }}" alt="{{ recipe.name }}" class="card-img-top img-fluid" style="border-radius: .5rem;">
-                                    </a>
-                                {% endif %}
-                                <!-- Ingredients -->
-                                <p class="card-text"><strong>Ingredients:</strong> {{ recipe.ingredients }}</p>
-                                <!-- Cooking Time -->
-                                <p class="card-text"><strong>Cooking Time:</strong> {{ recipe.minutes }} minutes</p>
-                                <!-- Display the average rating -->
-                                {% if recipe.average_rating %}
-                                    <p class="card-text"><strong>Average Rating:</strong> {{ recipe.average_rating|floatformat:1 }} / 5</p>
-                                {% else %}
-                                    <p class="card-text"><strong>Average Rating:</strong> No ratings yet</p>
-                                {% endif %}
-                            </div>
+<!-- Display user's recipes -->
+<div style="margin-top: 2rem;">
+    <h3 class="mt-4">Your Recipes</h3>
+    <div class="row mt-3">
+        {% for recipe in user_recipes %}
+            <div class="col-12 col-md-4 mb-3"> <!-- Adjusted to match original spacing -->
+                <a href="{% url 'recipe-detail' recipe.id %}" class="text-decoration-none text-reset"> <!-- Full card as a link -->
+                    <div class="card custom-recipe-card w-100 h-100" style="border-radius: .5rem;"> <!-- Set h-100 for full height -->
+                        <div class="card-body d-flex flex-column justify-content-between">
+                            <!-- Recipe Name -->
+                            <h3 class="mb-2 text-center card-title">{{ recipe.name }}</h3>
+
+                            <!-- Recipe Picture -->
+                            {% if recipe.image %}
+                                <img src="{{ recipe.image.url }}" alt="{{ recipe.name }}" class="card-img-top img-fluid" style="border-radius: .5rem;">
+                            {% endif %}
+
+                            <!-- Ingredients -->
+                            <p class="mt-2 mb-3"><strong>Number of Ingredients:</strong> {{ recipe.ingredients }}</p>  <!-- Number of Ingredients -->
+
+
+                            <!-- Cooking Time -->
+                            <p class="card-text"><strong>Cooking Time:</strong> {{ recipe.minutes }} minutes</p>
+
+                            <!-- Display the average rating -->
+                            {% if recipe.average_rating %}
+                                <p>
+                                    <strong>Ratings:</strong>
+                                    {% for i in "12345" %}
+                                        {% if i <= recipe.average_rating|floatformat:0 %}
+                                            <span class="text-warning" style="font-size: 1.5em;">&#9733;</span>  <!-- Filled star -->
+                                        {% else %}
+                                            <span class="text-muted" style="font-size: 1.5em;">&#9734;</span>  <!-- Empty star -->
+                                        {% endif %}
+                                    {% endfor %}
+                                </p>
+                            {% else %}
+                                <p>No ratings yet</p>
+                            {% endif %}      
                         </div>
                     </div>
-                {% empty %}
-                    <div class="col-12">
-                        <div class="list-group-item">No recipes yet.</div>
-                    </div>
-                {% endfor %}
+                </a>
             </div>
-        </div>
-        
+        {% empty %}
+            <div class="col-12">
+                <p>No recipes found.</p>
+            </div>
+        {% endfor %}
     </div>
+</div>
+
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>

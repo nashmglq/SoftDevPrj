@@ -203,13 +203,20 @@ class UpdateRatingCommentView(LoginRequiredMixin, View):
 class DeleteRatingCommentView(LoginRequiredMixin, View):
     def post(self, request, pk):
         comment = get_object_or_404(Comment, pk=pk)
-        rating = get_object_or_404(Rating, recipe=comment.recipe, user=request.user)
 
-        if request.user == comment.user:
-            comment.delete()  
-            rating.delete()  
+        # If the user is a superuser, they can delete any rating associated with the comment's recipe
+        if request.user.is_superuser:
+            rating = get_object_or_404(Rating, recipe=comment.recipe)
+        else:
+            # Regular users can only delete their own ratings
+            rating = get_object_or_404(Rating, recipe=comment.recipe, user=request.user)
+
+        if request.user == comment.user or request.user.is_superuser:
+            comment.delete()
+            rating.delete()
 
         return redirect(comment.recipe.get_absolute_url())
+
     
 
 class RecipeCreateView(LoginRequiredMixin, CreateView):
@@ -244,12 +251,14 @@ class RecipeUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 class RecipeDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Recipe
     success_url = '/home/'
+
     def test_func(self):
         recipe = self.get_object()
-        if self.request.user == recipe.user:
+        # Allow superuser to delete any recipe
+        if self.request.user.is_superuser or self.request.user == recipe.user:
             return True
         return False
-
+    
 def home(request):
     context = {
         'recipes': Recipe.objects.all()

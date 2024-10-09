@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User List</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}"> 
+</head>
+<body>
+
+    {%include 'nav_admin.html'%}
+    <div class="container my-4">
+        <h1 class="mb-4">User List</h1>
+        
+        <form class="d-flex mb-3" method="GET" action="">
+            <input class="form-control me-2" type="search" name="q" placeholder="Search by username" value="{{ query }}">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+        </form>
+
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Username</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Active</th>
+                        <th scope="col">Staff</th> 
+                        <th scope="col">Admin</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.is_active|yesno:"Yes,No" }}</td>
+                        <td>{{ user.is_staff|yesno:"Yes,No" }}</td>
+                        <td>{{ user.is_superuser|yesno:"Yes,No" }}</td>
+                        <td>
+                            <a href="{% url 'edit-user' user.id %}" class="btn btn-primary btn-sm m-2">Edit</a>
+                            <a href="{% url 'delete-user' user.id %}" class="btn btn-danger btn-sm m-2">Delete</a>
+                            
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6">No users found</td> 
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <a href="{% url 'home' %}" class="btn btn-secondary">Back to Home</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
