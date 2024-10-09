@@ -41,27 +41,29 @@ class RecipeListView(LoginRequiredMixin, ListView):
         user = self.request.user  # Get the current user
         queryset = Recipe.objects.all()
 
-
         time_threshold = now() - timedelta(days=7)
 
+        # Filter by ingredients
         if ingredients_query:
             ingredients = [ingredient.strip().lower() for ingredient in ingredients_query.split(',')]
             queryset = queryset.filter(
                 Q(ingredientsList__icontains=ingredients[0])
             ) if ingredients else queryset
 
+        # Filter by search query
         if search_query:
             queryset = queryset.filter(
                 Q(name__icontains=search_query.lower())
             )
 
+        # Filter by category
         if category_filter:
             queryset = queryset.filter(category__name__iexact=category_filter)
 
-
+        # Get recommended recipes
         recommended_recipes = get_recommendations(user)
 
-
+        # Annotate with recommendations
         queryset = queryset.annotate(
             is_recommended=Case(
                 When(id__in=recommended_recipes.values_list('id', flat=True), then=1),
@@ -70,31 +72,44 @@ class RecipeListView(LoginRequiredMixin, ListView):
             )
         )
 
-
+        # Annotate with ratings and counts
         queryset = queryset.annotate(
             average_rating=Avg('ratings__score'),
             views_count=Count('views'),
             comments_count=Count('comments', filter=Q(comments__created_at__gte=time_threshold)),
-            trending_score=(Count('views') * 1 + 
-                            Count('comments', filter=Q(comments__created_at__gte=time_threshold)) * 2 + 
-                            Avg('ratings__score') * 3)
+            trending_score=(
+                Count('views') * 1 + 
+                Count('comments', filter=Q(comments__created_at__gte=time_threshold)) * 2 + 
+                Avg('ratings__score') * 3
+            )
         )
+
+        # Sort based on the selected order
         queryset = queryset.order_by('-is_recommended')  
 
         if order == 'highest':
-            queryset = queryset.order_by( '-average_rating', '-created_at')
+            queryset = queryset.order_by('-average_rating', '-created_at')
         elif order == 'lowest':
-            queryset = queryset.order_by( 'average_rating', '-created_at')
+            queryset = queryset.order_by('average_rating', '-created_at')
         elif order == 'most_views':
-            queryset = queryset.order_by( '-views_count')
+            queryset = queryset.order_by('-views_count')
         elif order == 'trending':
             queryset = queryset.order_by('-trending_score')
         elif order == 'newest':
-            queryset = queryset.order_by( '-created_at')
+            queryset = queryset.order_by('-created_at')
         elif order == 'oldest':
             queryset = queryset.order_by('created_at')
         else:
             queryset = queryset.order_by('-is_recommended', '?') 
+
+        # Calculate integer and fractional parts for average rating
+        for recipe in queryset:
+            if recipe.average_rating is not None:
+                recipe.integer_part = int(recipe.average_rating)
+                recipe.fractional_part = recipe.average_rating - recipe.integer_part
+            else:
+                recipe.integer_part = 0
+                recipe.fractional_part = 0.0
 
         return queryset
 
@@ -111,9 +126,11 @@ def get_top_trending_recipes():
     top_trending_recipes = Recipe.objects.annotate(
         views_count=Count('views'),
         comments_count=Count('comments', filter=Q(comments__created_at__gte=time_threshold)),
-        trending_score=(Count('views') * 1 +
-                        Count('comments', filter=Q(comments__created_at__gte=time_threshold)) * 2 +
-                        Avg('ratings__score') * 3)
+        trending_score=(
+            Count('views') * 1 +
+            Count('comments', filter=Q(comments__created_at__gte=time_threshold)) * 2 +
+            Avg('ratings__score') * 3
+        )
     ).order_by('-trending_score')[:5]  # Get the top 5 trending recipes
 
     return top_trending_recipes
@@ -142,11 +159,17 @@ class RecipeDetailView(LoginRequiredMixin, DetailView):
         total_ratings = self.object.ratings.count()
         if total_ratings > 0:
             average_rating = self.object.ratings.aggregate(models.Avg('score'))['score__avg']
+            integer_part = int(average_rating)  # Get the integer part
+            fractional_part = average_rating - integer_part  # Get the fractional part
         else:
             average_rating = None
+            integer_part = None
+            fractional_part = None
 
         context['total_ratings'] = total_ratings
         context['average_rating'] = average_rating
+        context['integer_part'] = integer_part
+        context['fractional_part'] = fractional_part
 
         context['comments_with_ratings'] = [
             {
@@ -157,6 +180,7 @@ class RecipeDetailView(LoginRequiredMixin, DetailView):
         ]
 
         return context
+
 
     
 

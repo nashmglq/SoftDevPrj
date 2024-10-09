@@ -66,13 +66,14 @@
             </div>
 
             {% if object.user == user %}
-                <div>
-                    <a class="btn btn-secondary btn-sm" href="{% url 'recipe-update' object.id %}">Update</a>
+                <div class="btn-group" role="group" aria-label="Recipe actions">
+                    <a class="btn btn-secondary btn-sm mr-2" href="{% url 'recipe-update' object.id %}">Update</a>
                     <form action="{% url 'recipe-delete' object.id %}" method="POST" style="display:inline;">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                     </form>
                 </div>
+                
             {% elif request.user.is_superuser %}
                 <form action="{% url 'recipe-delete' object.id %}" method="POST" style="display:inline;">
                     {% csrf_token %}
@@ -84,23 +85,31 @@
         <div class="row d-flex align-items-center">
             <div class="col-md-6">
                 <h1>{{ object.name }}</h1>
+
                 <h5 class="card-title d-flex align-items-center">Ratings: 
                     {% if average_rating %}
-                        <div class="rating-star d-flex align-items-center">
-                            <span>
-                                <i class="fas fa-star{% if average_rating == 0.5 %}-half-alt{% endif %} text-warning" aria-hidden="true"></i>
-                                <i class="fas fa-star{% if average_rating == 1.5 %}-half-alt{% endif %} text-warning" aria-hidden="true"></i>
-                                <i class="fas fa-star{% if average_rating == 2.5 %}-half-alt{% endif %} text-warning" aria-hidden="true"></i>
-                                <i class="fas fa-star{% if average_rating == 3.5 %}-half-alt{% endif %} text-warning" aria-hidden="true"></i>
-                                <i class="fas fa-star{% if average_rating == 4.5 %}-half-alt{% endif %} text-warning" aria-hidden="true"></i>
-                            </span>
-                            <span class="ml-2">({{ average_rating|floatformat:1 }})</span>
-                        </div>
+                    <div class="rating-star d-flex align-items-center">
+                        <span>
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= integer_part %}
+                                    <i class="fas fa-star text-warning" aria-hidden="true"></i>
+                                {% elif forloop.counter == integer_part|add:1 and fractional_part >= 0.5 %}
+                                    <i class="fas fa-star-half-alt text-warning" aria-hidden="true"></i>
+                                {% else %}
+                                    <i class="fas fa-star" aria-hidden="true"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </span>
+                        <span class="ml-2">({{ average_rating|floatformat:1 }})</span>
+                    </div>
                     {% else %}
                         <small>No ratings yet.</small>
                     {% endif %}
                 </h5>
                 
+                
+                
+
                 
                 
         
@@ -178,13 +187,16 @@
                                         <form method="POST" action="{% url 'update-rating-comment' item.comment.id %}">
                                             {% csrf_token %}
                                             <div class="form-group">
+                                                <label for="content">Update Comment:</label>
                                                 <input type="text" name="content" value="{{ item.comment.content }}" required class="form-control" placeholder="Update comment">
                                             </div>
                                             <div class="form-group">
-                                                <input type="number" name="score" value="{{ item.rating.score }}" min="1" max="5" required class="form-control" placeholder="Update rating">
+                                                <label for="score">Update Rating:</label>
+                                                <input type="number" name="score" value="{{ item.rating.score }}" min="1" max="5" step="0.1" required class="form-control" placeholder="Update rating (1.0 - 5.0)">
                                             </div>
                                             <button type="submit" class="btn btn-primary btn-sm">Submit Update</button>
                                         </form>
+                                        
                                     </div>
                                     <form method="POST" action="{% url 'delete-rating-comment' item.comment.id %}" style="display:inline;">
                                         {% csrf_token %}
@@ -208,24 +220,24 @@
             <div>
                 <h4 class="text-center" style="color: #eedf7a;">Leave a Comment</h4>
                 {% if object.user != user %}
-                    <form method="POST" action="{% url 'add-rating-comment' object.pk %}" class="mt-2">
-                        {% csrf_token %}
-                        <div class="form-group">
-                            <label for="score">Rating:</label>
-                            <input type="number" name="score" min="1" max="5" required class="form-control" placeholder="Rate this recipe">
-                        </div>
-                        <div class="form-group">
-                            <label for="content">Comment:</label>
-                            <textarea name="content" required class="form-control" rows="3" placeholder="Leave a comment"></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Submit</button>
-                    </form>
+                <form method="POST" action="{% url 'add-rating-comment' object.pk %}" class="mt-2">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="score">Rating:</label>
+                        <input type="number" name="score" step="0.1" min="1" max="5" required class="form-control" placeholder="Rate this recipe (0.0 - 5.0)">
+                    </div>
+                    <div class="form-group">
+                        <label for="content">Comment:</label>
+                        <textarea name="content" required class="form-control" rows="3" placeholder="Leave a comment"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+                
                 {% else %}
                     <p class="text-danger">You cannot rate your own recipe.</p>
                 {% endif %}
             </div>
-            {% endif %}
-        </div>
+        {% endif %}
         
 
         <script>

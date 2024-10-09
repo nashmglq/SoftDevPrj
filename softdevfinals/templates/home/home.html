@@ -159,22 +159,32 @@
                                 <p class="mt-2 mb-3"><strong>Number of Ingredients:</strong> {{ recipe.ingredients }}</p>  <!-- Number of Ingredients -->
 
                                 <p><strong>Cooking Time:</strong> {{ recipe.minutes }} minutes</p>  <!-- Cooking Time -->
-                                {% if recipe.average_rating %}
-                                <h7 class="card-title d-flex align-items-center">Ratings: 
-                                    <div class="rating-star d-flex align-items-center ml-2">
-                                        <span>
-                                            <i class="fas fa-star{% if recipe.average_rating == 0.5 %}-half-alt{% endif %} text-warning" aria-hidden="true"></i>
-                                            <i class="fas fa-star{% if recipe.average_rating == 1.5 %}-half-alt{% endif %} text-warning" aria-hidden="true"></i>
-                                            <i class="fas fa-star{% if recipe.average_rating == 2.5 %}-half-alt{% endif %} text-warning" aria-hidden="true"></i>
-                                            <i class="fas fa-star{% if recipe.average_rating == 3.5 %}-half-alt{% endif %} text-warning" aria-hidden="true"></i>
-                                            <i class="fas fa-star{% if recipe.average_rating == 4.5 %}-half-alt{% endif %} text-warning" aria-hidden="true"></i>
-                                        </span>
-                                        <span class="ml-2">({{ recipe.average_rating|floatformat:1 }})</span>
-                                    </div>
-                                </h7>
-                            {% else %}
-                                <p>No ratings yet</p>
-                            {% endif %}
+
+
+
+                                <h5 class="card-title d-flex align-items-center">Ratings: 
+                                    {% if recipe.average_rating %}
+                                        <div class="rating-star d-flex align-items-center">
+                                            <span>
+                                                {% for i in "12345" %}
+                                                    {% if forloop.counter <= recipe.integer_part %}
+                                                        <i class="fas fa-star text-warning" aria-hidden="true"></i>
+                                                    {% elif forloop.counter == recipe.integer_part|add:1 and recipe.fractional_part >= 0.5 %}
+                                                        <i class="fas fa-star-half-alt text-warning" aria-hidden="true"></i>
+                                                    {% else %}
+                                                        <i class="fas fa-star" aria-hidden="true"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </span>
+                                            <span class="ml-2">({{ recipe.average_rating|floatformat:1 }})</span>
+                                        </div>
+                                    {% else %}
+                                        <small>No ratings yet.</small>
+                                    {% endif %}
+                                </h5>
+                                
+                                
+                                
                             
                             </div>
                         </div>

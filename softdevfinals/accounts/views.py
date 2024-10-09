@@ -23,17 +23,16 @@ from recipes.models import Recipe
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError 
 from django.core import validators 
-<<<<<<< HEAD
 from django.contrib.auth.decorators import user_passes_test
 
-=======
+
 from recipes.views import RecipeListView
 from recipes.models import Recipe
 from django.db.models import Q, Avg, Count, Case, When, IntegerField
 from datetime import timedelta
 from django.utils import timezone
 import random
->>>>>>> 57fff83b0b97e57ba211d72bcdcd871964908294
+
 def register(request):
     if request.user.is_authenticated:
         return redirect('home')  
