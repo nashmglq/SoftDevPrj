@@ -27,12 +27,22 @@ class CustomUserCreationForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super(CustomUserCreationForm, self).__init__(*args, **kwargs)
-        self.fields['username'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Enter a username'})
-        self.fields['password1'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Enter a password'})
-        self.fields['password2'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Confirm your password'})
 
-        self.fields['password1'].widget.attrs.update({'class': 'form-control col-md-6'})
-        self.fields['password2'].widget.attrs.update({'class': 'form-control col-md-6'})
+        # Set widget attributes for all fields
+        self.fields['username'].widget.attrs.update({
+            'class': 'form-control',
+            'placeholder': 'Enter your Username'
+        })
+        self.fields['password1'].widget.attrs.update({
+            'class': 'form-control',
+            'placeholder': 'Enter your Password'
+        })
+        self.fields['password2'].widget.attrs.update({
+            'class': 'form-control',
+            'placeholder': 'Re-type your Password'
+        })
+
+
 
 
 class UserUpdateForm(forms.ModelForm):

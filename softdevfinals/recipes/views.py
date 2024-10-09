@@ -6,9 +6,26 @@ from django.db.models import Q
 from django.shortcuts import redirect
 from .forms import RatingCommentForm
 from django.views import View
-from django.db.models import Count, Avg, Q
+from django.db.models import Q, Avg, Count, Case, When, IntegerField
 from django.utils.timezone import now
 from datetime import timedelta
+
+def get_recommendations(user):
+
+    favorite_recipes = user.favorite_recipes.all()
+
+    if not favorite_recipes.exists():
+        return Recipe.objects.none()
+
+    categories = favorite_recipes.values_list('category', flat=True)
+
+
+    recommended_recipes = Recipe.objects.filter(
+        category__in=categories
+    )
+
+    return recommended_recipes.distinct()
+
 
 class RecipeListView(LoginRequiredMixin, ListView):
     model = Recipe
@@ -20,10 +37,11 @@ class RecipeListView(LoginRequiredMixin, ListView):
         search_query = self.request.GET.get('search')
         ingredients_query = self.request.GET.get('fridge')
         order = self.request.GET.get('order')
-        category_filter = self.request.GET.get('category')  # Get the category filter
+        category_filter = self.request.GET.get('category')
+        user = self.request.user  # Get the current user
         queryset = Recipe.objects.all()
 
-        # 1 week trending
+
         time_threshold = now() - timedelta(days=7)
 
         if ingredients_query:
@@ -38,45 +56,67 @@ class RecipeListView(LoginRequiredMixin, ListView):
             )
 
         if category_filter:
-            queryset = queryset.filter(category__name__iexact=category_filter) 
+            queryset = queryset.filter(category__name__iexact=category_filter)
+
+
+        recommended_recipes = get_recommendations(user)
+
 
         queryset = queryset.annotate(
-            average_rating=Avg('ratings__score'),  # Get recipe rating
-            views_count=Count('views'),  # Count all views on each recipe
-            comments_count=Count('comments', filter=Q(comments__created_at__gte=time_threshold))  # Filter comments last 7 days
-        )
-
-        # COMPUTE THE RECIPE TRENDS BY WEIGHT
-        queryset = queryset.annotate(
-            trending_score=(
-                Count('views') * 1 +  # Weight views by 1
-                Count('comments', filter=Q(comments__created_at__gte=time_threshold)) * 2 +  # Weight recent comments by 2
-                Avg('ratings__score') * 3  # Weight ratings by 3
+            is_recommended=Case(
+                When(id__in=recommended_recipes.values_list('id', flat=True), then=1),
+                default=0,
+                output_field=IntegerField()
             )
         )
 
+
+        queryset = queryset.annotate(
+            average_rating=Avg('ratings__score'),
+            views_count=Count('views'),
+            comments_count=Count('comments', filter=Q(comments__created_at__gte=time_threshold)),
+            trending_score=(Count('views') * 1 + 
+                            Count('comments', filter=Q(comments__created_at__gte=time_threshold)) * 2 + 
+                            Avg('ratings__score') * 3)
+        )
+        queryset = queryset.order_by('-is_recommended')  
+
         if order == 'highest':
-            queryset = queryset.order_by('-average_rating', '-created_at')
+            queryset = queryset.order_by( '-average_rating', '-created_at')
         elif order == 'lowest':
-            queryset = queryset.order_by('average_rating', '-created_at')
+            queryset = queryset.order_by( 'average_rating', '-created_at')
         elif order == 'most_views':
-            queryset = queryset.order_by('-views_count')
+            queryset = queryset.order_by( '-views_count')
         elif order == 'trending':
             queryset = queryset.order_by('-trending_score')
         elif order == 'newest':
-            queryset = queryset.order_by('-created_at')
+            queryset = queryset.order_by( '-created_at')
         elif order == 'oldest':
             queryset = queryset.order_by('created_at')
         else:
-            queryset = queryset.order_by('?')
+            queryset = queryset.order_by('-is_recommended', '?') 
 
         return queryset
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['categories'] = Category.objects.all().order_by('name')  # Sort categories alphabetically
-        context['recommended_recipes'] = Recipe.get_recommendations(self.request.user)  # Get recommendations
+        context['categories'] = Category.objects.all().order_by('name')
+        context['recommended_recipes'] = get_recommendations(self.request.user)  
         return context
+
+
+def get_top_trending_recipes():
+    time_threshold = now() - timedelta(days=7)
+    
+    top_trending_recipes = Recipe.objects.annotate(
+        views_count=Count('views'),
+        comments_count=Count('comments', filter=Q(comments__created_at__gte=time_threshold)),
+        trending_score=(Count('views') * 1 +
+                        Count('comments', filter=Q(comments__created_at__gte=time_threshold)) * 2 +
+                        Avg('ratings__score') * 3)
+    ).order_by('-trending_score')[:5]  # Get the top 5 trending recipes
+
+    return top_trending_recipes
 
 class RecipeDetailView(LoginRequiredMixin, DetailView):
     model = Recipe

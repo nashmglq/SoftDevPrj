@@ -7,7 +7,6 @@
     <title>Create Recipe</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
-    {% load crispy_forms_tags %}
 </head>
 <body>
     {% include 'nav.html' %}
@@ -15,7 +14,77 @@
         <h2>Create a New Recipe</h2>
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-            {{ form|crispy }}  <!-- Render the form with Crispy Forms -->
+
+            <div class="form-group">
+                <label for="{{ form.name.id_for_label }}">Recipe Name:</label>
+                <input type="text" name="name" id="{{ form.name.id_for_label }}" class="form-control" placeholder="Enter recipe name" value="{{ form.name.value|default:'' }}">
+                {% for error in form.name.errors %}
+                    <div class="alert alert-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.image.id_for_label }}">Image:</label>
+                <input type="file" name="image" id="{{ form.image.id_for_label }}" class="form-control-file">
+                {% for error in form.image.errors %}
+                    <div class="alert alert-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.ingredients.id_for_label }}">Number of Ingredients:</label>
+                <input type="number" name="ingredients" id="{{ form.ingredients.id_for_label }}" class="form-control" placeholder="Number of ingredients" value="{{ form.ingredients.value|default:'' }}">
+                {% for error in form.ingredients.errors %}
+                    <div class="alert alert-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            
+
+            <div class="form-group">
+                <label for="{{ form.minutes.id_for_label }}">Minutes:</label>
+                <input type="text" name="minutes" id="{{ form.minutes.id_for_label }}" class="form-control" placeholder="Preparation time in minutes" value="{{ form.minutes.value|default:'' }}">
+                {% for error in form.minutes.errors %}
+                    <div class="alert alert-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.calories.id_for_label }}">Calories:</label>
+                <input type="text" name="calories" id="{{ form.calories.id_for_label }}" class="form-control" placeholder="Total calories" value="{{ form.calories.value|default:'' }}">
+                {% for error in form.calories.errors %}
+                    <div class="alert alert-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.directions.id_for_label }}">Directions:</label>
+                <textarea name="directions" id="{{ form.directions.id_for_label }}" class="form-control" placeholder="Instructions" rows="5">{{ form.directions.value|default:'' }}</textarea>
+                {% for error in form.directions.errors %}
+                    <div class="alert alert-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.ingredientsList.id_for_label }}">Ingredients List:</label>
+                <textarea name="ingredientsList" id="{{ form.ingredientsList.id_for_label }}" class="form-control" placeholder="Ingredients in list format" rows="5">{{ form.ingredientsList.value|default:'' }}</textarea>
+                {% for error in form.ingredientsList.errors %}
+                    <div class="alert alert-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            
+
+            <div class="form-group">
+                <label for="{{ form.category.id_for_label }}">Category:</label>
+                <select name="category" id="{{ form.category.id_for_label }}" class="form-control">
+                    {% for category in form.category.field.queryset %}
+                        <option value="{{ category.id }}"{% if category.id == form.category.value %} selected{% endif %}>{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+                {% for error in form.category.errors %}
+                    <div class="alert alert-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
     </div>

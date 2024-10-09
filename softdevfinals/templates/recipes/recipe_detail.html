@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
     {% load static %}
 <head>
@@ -11,88 +10,53 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg">
-        <div class="text-center mb-4"></div>
-        <img src="{% static 'css/logo.png' %}" alt="Logo" class="logo" />
-        </div>
-        <a class="nav-link" href="{% url 'home' %}">Share Mo Lang</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'profile' %}">Profile</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'recipe-create' %}">Create New Recipe</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-danger" href="{% url 'logout' %}">Logout</a>
-                    </li>
-                </ul>
-            </div>
-    </nav>
+    {% include 'nav.html' %}
  
     <div class="container mt-5">
-
-        <div class="d-flex justify-content-between align-items-center" style="margin-bottom: 2rem;">
-            <!-- Left: Return Button -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
             <a href="{% url 'home' %}" class="btn btn-danger">Return</a>
-            <div class="ml-auto">
+            <div>
                 {% if request.user in recipe.favorites.all %}
-                    <form action="{% url 'remove_favorite' recipe.pk %}" method="post">
+                    <form action="{% url 'remove_favorite' recipe.pk %}" method="post" class="d-inline">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-danger">Remove from Favorites</button>
-                </form>
-                    {% else %}
-                        <form action="{% url 'add_favorite' recipe.pk %}" method="post">
-                            {% csrf_token %}
-                            <button type="submit" class="btn custom-btn">Add to Favorites</button>
-                        </form>
-            {% endif %}
+                    </form>
+                {% else %}
+                    <form action="{% url 'add_favorite' recipe.pk %}" method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn custom-btn">Add to Favorites</button>
+                    </form>
+                {% endif %}
             </div>
-            <!-- Right: Update and Delete buttons -->
             {% if object.user == user %}
-            <div class="ml-auto">
-                <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'recipe-update' object.id %}">Update</a>
-                <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'recipe-delete' object.id %}">Delete</a>
+            <div>
+                <a class="btn btn-secondary btn-sm" href="{% url 'recipe-update' object.id %}">Update</a>
+                <a class="btn btn-danger btn-sm" href="{% url 'recipe-delete' object.id %}">Delete</a>
             </div>
             {% endif %}
         </div>
 
-
         <div class="row d-flex align-items-center">
-            <!-- Left side: Content -->
             <div class="col-md-6">
                 <h1>{{ object.name }}</h1>
-                <p>By: <strong>{{ object.user.username }}</strong> </p>
-                
-                <!-- Add some space before the details -->
+                <p>By: <strong>{{ object.user.username }}</strong></p>
                 <div class="details-section">
                     <div class="row">
-                        <!-- Ingredients -->
                         <div class="col-4 text-center border-right">
                             <h1>{{ object.ingredients }}</h1>
                             <h4>Ingredients</h4>
                         </div>
-                
-                        <!-- Time to Cook -->
                         <div class="col-4 text-center border-right">
                             <h1>{{ object.minutes }}</h1>
                             <h4>Minutes</h4>
                         </div>
-                
-                        <!-- Calories -->
                         <div class="col-4 text-center">
                             <h1>{{ object.calories }}</h1>
                             <h4>Calories</h4>
                         </div>
                     </div>
-                </div>  
+                </div>
             </div>
-            
-            <!-- Right side: Image -->
             <div class="col-md-5">
                 {% if object.image %}
                     <img src="{{ object.image.url }}" alt="{{ object.name }}" class="image">
@@ -105,20 +69,14 @@
         <hr class="divider">
         <br>
 
-
-        <div class="container-mt5">
-            <div class="row d-flex align-items-center">
-                <!-- Left side: Content -->
-                <div class="col-md-6">
-                    <h4 style = "text-align: center; margin-bottom: 1rem; color : #eedf7a;">Ingredients</h4>
-                    <p>{{ object.ingredientsList }}</p>
-                </div>
-                
-                <!-- Right side: Image -->
-                <div class="col-md-6">
-                    <h4 style = "text-align: center; margin-bottom: 1rem; color : #eedf7a;">Directions</h4>
-                    <p>{{ object.directions }}</p>
-                </div>
+        <div class="row">
+            <div class="col-md-6">
+                <h4 class="text-center" style="color : #eedf7a;">Ingredients</h4>
+                <p>{{ object.ingredientsList }}</p>
+            </div>
+            <div class="col-md-6">
+                <h4 class="text-center" style="color : #eedf7a;">Directions</h4>
+                <p>{{ object.directions }}</p>
             </div>
         </div>
         <br>
@@ -126,102 +84,92 @@
 
         <div class="rates">
             <div>
-                <div class="card-body">
-                    
-                    <!-- Total Ratings Section -->
-                    <h4 style="text-align: center; color : #eedf7a;"> Rates and Comments</h4>
-                    <h5 class="card-title">Total Ratings: {{ total_ratings }}</h5>
-                    {% if average_rating %}
+                <h4 class="text-center" style="color : #eedf7a;">Rates and Comments</h4>
+                <h5 class="card-title">Total Ratings: {{ total_ratings }}</h5>
+                {% if average_rating %}
                     <h5 class="card-title">Average Rating: {{ average_rating|floatformat:1 }}</h5>
-                    {% else %}
+                {% else %}
                     <h5 class="card-title text-muted">Average Rating: Not rated yet.</h5>
-                    {% endif %}
-                    <ul class="list-group mt-4">
-                        {% for item in comments_with_ratings %}
-                            <li class="list-group-item text-dark">  <!-- Added text-dark class for black text -->
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <strong class="text-dark">{{ item.comment.user.username }}:</strong> 
-                                        <span class="text-dark">{{ item.comment.content }}</span> <!-- Added text-dark class -->
-                                    </div>
-                                    <div>
-                                        {% if item.rating %}
-                                            <span class="badge badge-secondary">Rating: {{ item.rating.score }}</span>
-                                        {% else %}
-                                            <span class="badge badge-light">No rating given</span>
-                                        {% endif %}
-                                    </div>
+                {% endif %}
+                <ul class="list-group mt-4">
+                    {% for item in comments_with_ratings %}
+                        <li class="list-group-item text-dark">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong class="text-dark">{{ item.comment.user.username }}:</strong> 
+                                    <span class="text-dark">{{ item.comment.content }}</span>
                                 </div>
-                                
-                                {% if item.comment.user == user %}
-                                    <div class="mt-2">
-                                        <button class="btn btn-warning btn-sm" onclick="toggleUpdateForm('update-form-{{ item.comment.id }}')">Update</button>
-                                        
-                                        <!-- Update form, initially hidden -->
-                                        <div id="update-form-{{ item.comment.id }}" style="display: none; margin-top: 10px;">
-                                            <form method="POST" action="{% url 'update-rating-comment' item.comment.id %}">
-                                                {% csrf_token %}
-                                                <div class="form-group">
-                                                    <input type="text" name="content" value="{{ item.comment.content }}" required class="form-control" placeholder="Update comment" style="color: black;"> <!-- Set text color to black -->
-                                                </div>
-                                                <div class="form-group">
-                                                    <input type="number" name="score" value="{{ item.rating.score }}" min="1" max="5" required class="form-control" placeholder="Update rating" style="color: black;"> <!-- Set text color to black -->
-                                                </div>
-                                                <button type="submit" class="btn btn-primary btn-sm">Submit Update</button>
-                                            </form>
-                                        </div>
-                                        
-                                        <!-- Delete form -->
-                                        <form method="POST" action="{% url 'delete-rating-comment' item.comment.id %}" style="display:inline;">
+                                <div>
+                                    {% if item.rating %}
+                                        <span class="badge badge-secondary">Rating: {{ item.rating.score }}</span>
+                                    {% else %}
+                                        <span class="badge badge-light">No rating given</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            {% if item.comment.user == user %}
+                                <div class="mt-2">
+                                    <button class="btn btn-warning btn-sm" onclick="toggleUpdateForm('update-form-{{ item.comment.id }}')">Update</button>
+                                    <div id="update-form-{{ item.comment.id }}" style="display: none; margin-top: 10px;">
+                                        <form method="POST" action="{% url 'update-rating-comment' item.comment.id %}">
                                             {% csrf_token %}
-                                            <button type="submit" class="btn btn-danger btn-sm ml-2">Delete</button>
+                                            <div class="form-group">
+                                                <input type="text" name="content" value="{{ item.comment.content }}" required class="form-control" placeholder="Update comment" style="color: black;">
+                                            </div>
+                                            <div class="form-group">
+                                                <input type="number" name="score" value="{{ item.rating.score }}" min="1" max="5" required class="form-control" placeholder="Update rating" style="color: black;">
+                                            </div>
+                                            <button type="submit" class="btn btn-primary btn-sm">Submit Update</button>
                                         </form>
                                     </div>
-                                {% endif %}
-                            </li>
-                        {% empty %}
-                            <li class="list-group-item text-dark">No comments yet.</li> <!-- Added text-dark class -->
-                        {% endfor %}
-                    </ul>
-                </div>
-                <div>
-                    <div>
-                        <h4 style="text-align: center; color : #eedf7a;">Leave a Comment</h4>
-                        {% if object.user != user %}
-                        {% if rating %}
-                            <p>You have already rated this recipe: <strong>{{ rating.score }}</strong>.</p>
-                        {% else %}
-                            <form method="POST" action="{% url 'add-rating-comment' object.pk %}" class="mt-2">
-                                {% csrf_token %}
-                                <div class="form-group">
-                                    {{ form.as_p }}
+                                    <form method="POST" action="{% url 'delete-rating-comment' item.comment.id %}" style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger btn-sm ml-2">Delete</button>
+                                    </form>
                                 </div>
-                                <button type="submit" class="btn btn-primary">Submit</button>
-                            </form>
-                        {% endif %}
-                        {% else %}
-                            <p class="text-danger">You cannot rate your own recipe.</p>
-                        {% endif %}
-                    </div>
-                </div>
-    </div>
-   
-        
+                            {% endif %}
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item text-dark">No comments yet.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-center" style="color : #eedf7a;">Leave a Comment</h4>
+                {% if object.user != user %}
+                    {% if rating %}
+                        <p>You have already rated this recipe: <strong>{{ rating.score }}</strong>.</p>
+                    {% else %}
+                        <form method="POST" action="{% url 'add-rating-comment' object.pk %}" class="mt-2">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="score">Rating:</label>
+                                <input type="number" name="score" min="1" max="5" required class="form-control" placeholder="Rate this recipe" style="color: black;">
+                            </div>
+                            <div class="form-group">
+                                <label for="content">Comment:</label>
+                                <textarea name="content" required class="form-control" rows="3" placeholder="Leave a comment" style="color: black;"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    {% endif %}
+                {% else %}
+                    <p class="text-danger">You cannot rate your own recipe.</p>
+                {% endif %}
+            </div>
+        </div>
 
         <script>
             function toggleUpdateForm(formId) {
                 const form = document.getElementById(formId);
-                if (form.style.display === "none") {
-                    form.style.display = "block"; 
-                } else {
-                    form.style.display = "none"; 
-                }
+                form.style.display = form.style.display === "none" ? "block" : "none"; 
             }
         </script>
-        
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    </div>
 </body>
 </html>

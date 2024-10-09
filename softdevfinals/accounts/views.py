@@ -21,6 +21,8 @@ from django.contrib.auth import password_validation
 from django.contrib.auth.decorators import login_required
 from recipes.models import Recipe
 from django.shortcuts import get_object_or_404
+from django.core.exceptions import ValidationError 
+from django.core import validators 
 
 def register(request):
     if request.user.is_authenticated:
@@ -37,7 +39,9 @@ def register(request):
                 user.is_active = False 
                 user.save()
 
-                Profile.objects.create(user=user)
+                # Check if the profile already exists before creating a new one
+                if not hasattr(user, 'profile'):
+                    Profile.objects.create(user=user)
 
                 current_site = get_current_site(request)
                 mail_subject = 'Activate your account'
@@ -78,8 +82,9 @@ def activate(request, uidb64, token):
 
 def login_view(request):
     if request.user.is_authenticated:
-        print("User is already logged in") 
         return redirect('home') 
+
+    error_message = ""  # Initialize an error message variable
 
     if request.method == 'POST':
         form = CustomLoginForm(request.POST)  
@@ -90,18 +95,24 @@ def login_view(request):
             try:
                 user = User.objects.get(email=email)
 
-                if user.is_active and user.check_password(password):
-                    login(request, user)
-                    return redirect('home')
+                if user.is_active:
+                    if user.check_password(password):
+                        login(request, user)
+                        return redirect('home')
+                    else:
+                        error_message = 'Invalid email or password.'
                 else:
-                    messages.error(request, 'Invalid email or password.', extra_tags='login')
+                    error_message = 'Your account is not active. Please check your email to activate it.'
+
             except User.DoesNotExist:
-                messages.error(request, 'Invalid email or password.', extra_tags='login')
-                print("User does not exist.")
+                error_message = 'Invalid email or password.'
+        else:
+            error_message = 'Please correct the errors below.'
+
     else:
         form = CustomLoginForm()
 
-    return render(request, 'accounts/login.html', {'form': form})
+    return render(request, 'accounts/login.html', {'form': form, 'error_message': error_message})
 
 
 
@@ -109,99 +120,97 @@ def login_view(request):
 def logout_view(request):
     logout(request) 
     messages.success(request, 'You have been logged out.')
-    return redirect('login') 
+    return redirect('landing_page') 
 
 
 def resend_verification_email(request):
     if request.user.is_authenticated:
         return redirect('home')  
 
+    error_message_resend_email = ""  # Initialize an error message variable
+    success_message_resend_email = ""  # Initialize a success message variable
+
+    if request.method == 'POST':
+        email = request.POST.get('email')
+
+        if not email:  # Check if email is provided
+            error_message_resend_email = 'Please enter your email address.'
+        else:
+            try:
+                user = User.objects.get(email=email)
+                if user and not user.is_active:
+                    current_site = get_current_site(request)
+                    mail_subject = 'Activate your account'
+                    uid = urlsafe_base64_encode(force_bytes(user.pk))
+                    token = account_activation_token.make_token(user)
+                    activation_link = reverse('activate', kwargs={'uidb64': uid, 'token': token})
+                    activation_url = f"http://{current_site.domain}{activation_link}"
+
+                    message = f"Hi {user.username},\n\nPlease click the link below to activate your account:\n{activation_url}\n\nThank you!"
+                    send_mail(mail_subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
+
+                    success_message_resend_email = 'Verification email has been resent. Please check your inbox.'
+                else:
+                    error_message_resend_email = 'This email is already activated.'
+            except User.DoesNotExist:
+                error_message_resend_email = 'The email address you entered does not exist in our records.'
+
+    # Pass messages to the template only for this specific function
+    return render(request, 'accounts/resend_verification.html', {
+        'error_message_resend_email': error_message_resend_email,
+        'success_message_resend_email': success_message_resend_email,
+    })
+
+
+def password_reset_request(request):
+    if request.user.is_authenticated:
+        return redirect('home')
+
+    # Initialize message variables
+    error_message_reset_password = ""
+    success_message_reset_password = ""
+
     if request.method == 'POST':
         email = request.POST.get('email')
         try:
             user = User.objects.get(email=email)
-            if user and not user.is_active:
+
+            # Check if the user is active
+            if not user.is_active:
+                error_message_reset_password = 'This account is not active. Please contact support.'
+            else:
                 current_site = get_current_site(request)
-                mail_subject = 'Activate your account'
+                mail_subject = 'Password Reset Requested'
                 uid = urlsafe_base64_encode(force_bytes(user.pk))
-                token = account_activation_token.make_token(user)
-                activation_link = reverse('activate', kwargs={'uidb64': uid, 'token': token})
-                activation_url = f"http://{current_site.domain}{activation_link}"
-                
-                message = f"Hi {user.username},\n\nPlease click the link below to activate your account:\n{activation_url}\n\nThank you!"
+                token = default_token_generator.make_token(user)
+                reset_link = reverse('password_reset_confirm', kwargs={'uidb64': uid, 'token': token})
+                reset_url = f"http://{current_site.domain}{reset_link}"
+
+                message = f"Hi {user.username},\n\nPlease click the link below to reset your password:\n{reset_url}\n\nThank you!"
                 send_mail(mail_subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
 
-                messages.success(request, 'Verification email has been resent. Please check your inbox.', extra_tags='resend_email')
-            else:
-                messages.error(request, 'This email is already activated.', extra_tags='resend_email')
+                # Set success message and render the same page
+                success_message_reset_password = 'Password reset email has been sent. Please check your inbox.'
+
         except User.DoesNotExist:
-            messages.error(request, 'The email address you entered does not exist in our records.', extra_tags='resend_email')
+            error_message_reset_password = 'This email is not registered. Please check the email you entered.'
+        except Exception as e:
+            error_message_reset_password = f'An error occurred: {str(e)}'
 
-    return render(request, 'accounts/resend_verification.html')
-
-
-
-def password_reset_request(request):
-    if request.user.is_authenticated:
-        return redirect('home')  
-
-
-    if request.user.is_authenticated:
-        print("User is already logged in") 
-        return redirect('home') 
-
-    if request.method == 'POST':
-        email = request.POST.get('email')
-        try:
-            user = User.objects.get(email=email)
-            current_site = get_current_site(request)
-            mail_subject = 'Password Reset Requested'
-            uid = urlsafe_base64_encode(force_bytes(user.pk))
-            token = default_token_generator.make_token(user)
-            reset_link = reverse('password_reset_confirm', kwargs={'uidb64': uid, 'token': token})
-            reset_url = f"http://{current_site.domain}{reset_link}"
-
-            message = f"Hi {user.username},\n\nPlease click the link below to reset your password:\n{reset_url}\n\nThank you!"
-            send_mail(mail_subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
-
-            messages.success(request, 'Password reset email has been sent. Please check your inbox.')
-            return redirect('login')
-        except User.DoesNotExist:
-            messages.error(request, 'This email is not registered.')
-    return render(request, 'accounts/password_reset.html')
-
-
-def password_reset_request(request):
-
-    if request.user.is_authenticated:
-        print("User is already logged in") 
-        return redirect('home') 
-
-    if request.method == 'POST':
-        email = request.POST.get('email')
-        try:
-            user = User.objects.get(email=email)
-            current_site = get_current_site(request)
-            mail_subject = 'Password Reset Requested'
-            uid = urlsafe_base64_encode(force_bytes(user.pk))
-            token = default_token_generator.make_token(user)
-            reset_link = reverse('password_reset_confirm', kwargs={'uidb64': uid, 'token': token})
-            reset_url = f"http://{current_site.domain}{reset_link}"
-
-            message = f"Hi {user.username},\n\nPlease click the link below to reset your password:\n{reset_url}\n\nThank you!"
-            send_mail(mail_subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
-
-            messages.success(request, 'Password reset email has been sent. Please check your inbox.', extra_tags='password_reset')
-            return redirect('login')
-        except User.DoesNotExist:
-            messages.error(request, 'This email is not registered.', extra_tags='password_reset')
-    return render(request, 'accounts/password_reset.html')
+    # Render the password reset page with messages
+    return render(request, 'accounts/password_reset.html', {
+        'error_message_reset_password': error_message_reset_password,
+        'success_message_reset_password': success_message_reset_password,
+    })
 
 
 def password_reset_confirm(request, uidb64, token):
     if request.user.is_authenticated:
         print("User is already logged in") 
         return redirect('home') 
+
+    error_message_confirm_reset_password = ""  # Initialize an error message variable 
+    success_message_confirm_reset_password = ""  # Initialize a success message variable
 
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
@@ -215,27 +224,42 @@ def password_reset_confirm(request, uidb64, token):
             confirm_password = request.POST.get('confirm_password')
 
             if user.check_password(new_password):
-                messages.error(request, 'The new password cannot be the same as the old password. Please choose a different password.', extra_tags='password_reset_confirm')
+                error_message_confirm_reset_password = 'The new password cannot be the same as the old password. Please choose a different password.'
             else:
                 try:
+                    # Validate the password, this will raise an exception if it's common or invalid
                     password_validation.validate_password(password=new_password, user=user)
 
                     if new_password == confirm_password:
                         user.set_password(new_password)
                         user.save()
-                        messages.success(request, 'Your password has been successfully reset. You can now log in.', extra_tags='password_reset_confirm')
+                        success_message_confirm_reset_password = 'Your password has been successfully reset. You can now log in.'
+                        messages.success(request, success_message_confirm_reset_password, extra_tags='password_reset_confirm')
                         return redirect('login')
                     else:
-                        messages.error(request, 'Passwords do not match. Please try again.', extra_tags='password_reset_confirm')
+                        error_message_confirm_reset_password = 'Passwords do not match. Please try again.'
+
+                except validators.ValidationError as e:
+                    # Handle common password or other validation errors
+                    error_message_confirm_reset_password = ' '.join(e.messages)  # Join error messages into a single string
 
                 except Exception as e:
-                    messages.error(request, str(e), extra_tags='password_reset_confirm')  
+                    error_message_confirm_reset_password = str(e)
 
-        return render(request, 'accounts/password_reset_confirm.html', {'valid_link': True})
+        return render(request, 'accounts/password_reset_confirm.html', {
+            'valid_link': True,
+            'error_message_confirm_reset_password': error_message_confirm_reset_password,
+            'success_message_confirm_reset_password': success_message_confirm_reset_password,
+        })
     else:
-        messages.error(request, 'The password reset link is invalid.', extra_tags='password_reset_confirm')
-        return render(request, 'accounts/invalid.html', {'valid_link': False})
-
+        error_message_confirm_reset_password = 'The password reset link is invalid.'
+        messages.error(request, error_message_confirm_reset_password, extra_tags='password_reset_confirm')
+        return render(request, 'accounts/invalid.html', {
+            'valid_link': False,
+            'error_message_confirm_reset_password': error_message_confirm_reset_password,
+        })
+    
+    
 @login_required
 def profile(request):
     user_recipes = Recipe.objects.filter(user=request.user)  # Filter recipes by user

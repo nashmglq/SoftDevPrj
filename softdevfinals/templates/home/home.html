@@ -69,22 +69,7 @@
     </nav>
 
     <div class="container mt-5">
-        <h2>Welcome, {{ request.user.username }}!</h2>
-        <p>Explore Recipes</p>
         
-        <div class="text-center mt-4">
-            <a href="{% url 'home' %}?order=trending&category={{ request.GET.category }}" class="btn {% if request.GET.order == 'trending' %}btn-primary{% else %}btn-info{% endif %}">Trending Recipes</a>
-            <a href="{% url 'home' %}?order=highest&category={{ request.GET.category }}" class="btn {% if request.GET.order == 'highest' %}btn-primary{% else %}btn-info{% endif %}">Most Rated</a>
-            <a href="{% url 'home' %}?order=lowest&category={{ request.GET.category }}" class="btn {% if request.GET.order == 'lowest' %}btn-primary{% else %}btn-info{% endif %}">Least Rated</a>
-            <a href="{% url 'home' %}?order=most_views&category={{ request.GET.category }}" class="btn {% if request.GET.order == 'most_views' %}btn-primary{% else %}btn-info{% endif %}">Most Visited</a>
-            <a href="{% url 'home' %}?order=newest&category={{ request.GET.category }}" class="btn {% if request.GET.order == 'newest' %}btn-primary{% else %}btn-info{% endif %}">Newest</a>
-            <a href="{% url 'home' %}?order=oldest&category={{ request.GET.category }}" class="btn {% if request.GET.order == 'oldest' %}btn-primary{% else %}btn-info{% endif %}">Oldest</a>
-            <a href="{% url 'home' %}?category={{ request.GET.category }}" class="btn btn-danger">Random</a>
-            <a href="{% url 'home' %}?order={{ request.GET.order }}" class="btn btn-danger">Remove Filters</a>
-
-        </div>
-        
-
 
         <div class="mt-4">
             <button id="normalSearchButton" class="btn btn-info" onclick="setSearchMode('standard')">Normal Search</button>
@@ -115,9 +100,8 @@
             </div>
         </form>
 
-
+        
         <div class="text-center mt-4">
-            <h4>Filter by Category:</h4>
             {% for category in categories %}
                 <a href="{% url 'home' %}?category={{ category.name }}" class="btn {% if request.GET.category == category.name %}btn-primary{% else %}btn-secondary{% endif %}">
                     {{ category.name }}
@@ -125,6 +109,20 @@
             {% endfor %} 
         </div>
         
+
+                
+        <div class="text-center mt-4">
+            <a href="{% url 'home' %}?order=trending&category={{ request.GET.category }}" class="btn {% if request.GET.order == 'trending' %}btn-primary{% else %}btn-info{% endif %}">Trending Recipes</a>
+            <a href="{% url 'home' %}?order=highest&category={{ request.GET.category }}" class="btn {% if request.GET.order == 'highest' %}btn-primary{% else %}btn-info{% endif %}">Most Rated</a>
+            <a href="{% url 'home' %}?order=lowest&category={{ request.GET.category }}" class="btn {% if request.GET.order == 'lowest' %}btn-primary{% else %}btn-info{% endif %}">Least Rated</a>
+            <a href="{% url 'home' %}?order=most_views&category={{ request.GET.category }}" class="btn {% if request.GET.order == 'most_views' %}btn-primary{% else %}btn-info{% endif %}">Most Visited</a>
+            <a href="{% url 'home' %}?order=newest&category={{ request.GET.category }}" class="btn {% if request.GET.order == 'newest' %}btn-primary{% else %}btn-info{% endif %}">Newest</a>
+            <a href="{% url 'home' %}?order=oldest&category={{ request.GET.category }}" class="btn {% if request.GET.order == 'oldest' %}btn-primary{% else %}btn-info{% endif %}">Oldest</a>
+            <a href="{% url 'home' %}??order=random&category={{ request.GET.category }}" class="btn btn-danger">Random</a>
+            <a href="{% url 'home' %}" class="btn btn-danger">Remove Filters</a>
+        </div>
+
+
 
         <h3 class="mt-4">Your Recipes</h3>
         <div class="row mt-3">

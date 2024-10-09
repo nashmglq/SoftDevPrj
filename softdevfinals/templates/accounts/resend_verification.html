@@ -10,20 +10,25 @@
 </head>
 <body>
     <div class="box-container">
-    <h2>Resend Email Verification</h2>
-    <p>If you haven't received your verification email, please enter your email address below to resend it.</p>
-    
-    <form method="post">
-        {% csrf_token %}
-        <input type="email" class="form-control" name="email" placeholder="Enter your email address" required>
-        <div class="text-right mt-2 v">
-        <button type="submit" class="btn custom-btn">Resend</button>
-        </div>
-    </form>
-    
-    <p><a href="{% url 'login' %}">Back to Home</a></p>
-    </div>
-    
+        <h2>Resend Email Verification</h2>
+        <p>If you haven't received your verification email, please enter your email address below to resend it.</p>
 
+        {% if success_message_resend_email %}
+            <div class="alert alert-success">{{ success_message_resend_email }}</div>
+        {% endif %}
+        {% if error_message_resend_email %}
+            <div class="alert alert-danger">{{ error_message_resend_email }}</div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <input type="email" class="form-control" name="email" placeholder="Enter your email address" required>
+            <div class="text-right mt-2">
+                <button type="submit" class="btn custom-btn">Resend</button>
+            </div>
+        </form>
+        
+        <p><a href="{% url 'login' %}">Back to Home</a></p>
+    </div>
 </body>
 </html>
