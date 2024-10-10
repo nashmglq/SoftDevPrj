@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Favorites</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="stylesheet" href="{% static 'css/favorite.css' %}">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg">
@@ -46,30 +46,28 @@
         </div>
     </nav>
 
-
     
     <div class="container mt-5">
-        <h2>Your Favorite Recipes</h2>
-        <p>This is your favorites page.</p>
+        <h1 style="text-align: center; text-transform: uppercase ;"><strong>Favorites</strong></h1>
 
         <div class="row mt-3">
             {% for recipe in favorite_recipes %}
-                <div class="col-md-4">
-                    <div class="recipe-card">
-                        {% if recipe.image %}
-                            <a href="{% url 'recipe-detail' recipe.pk %}">
-                                <img src="{{ recipe.image.url }}" alt="{{ recipe.name }}" class="img-fluid recipe-image">
-                            </a>
-                        {% endif %}
-                        <h5>
-                            <a href="{% url 'recipe-detail' recipe.pk %}">{{ recipe.name }}</a>
-                        </h5>
-                        <form action="{% url 'remove_favorite' recipe.pk %}" method="post" style="display:inline;" onsubmit="handleRemove(event, this);">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-danger btn-sm" onclick="event.stopPropagation();">Remove</button>
-                        </form>
+                <a href="{% url 'recipe-detail' recipe.id %}" class="text-decoration-none text-reset">
+                    <div class="col-md-4">
+                        <div class="recipe-card-favorite">
+                            {% if recipe.image %}
+                                <a href="{% url 'recipe-detail' recipe.pk %}">
+                                    <img src="{{ recipe.image.url }}" alt="{{ recipe.name }}" class="recipe-image">
+                                </a>
+                            {% endif %}
+                                <h5 class="recipe-title">{{ recipe.name }}</h5>
+                            <form action="{% url 'remove_favorite' recipe.pk %}" method="post" style="display:inline;" onsubmit="handleRemove(event, this);">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="event.stopPropagation();">Remove</button>
+                            </form>
+                        </div>
                     </div>
-                </div>
+                </a>
             {% empty %}
                 <div class="col-12">
                     <p>No favorite recipes found.</p>

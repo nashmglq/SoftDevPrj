@@ -14,31 +14,31 @@ body {
 .category-circle {
     background-color: #555; /* Circle background color */
     border-radius: 50%; /* Circular shape */
-    width: 60px;
-    height: 60px;
+    width: 3.75rem; /* 60px converted to rem */
+    height: 3.75rem; /* 60px converted to rem */
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 10px;
+    margin: 0.625rem; /* 10px converted to rem */
 }
 
 .category-icon {
-    width: 40px;
-    height: 40px;
+    width: 2.5rem; /* 40px converted to rem */
+    height: 2.5rem; /* 40px converted to rem */
 }
 
 .recipe-card {
     background-color: #444; /* Dark gray for recipe cards */
-    border-radius: 10px;
-    padding: 15px;
-    margin: 15px 0;
+    border-radius: 0.625rem; /* 10px converted to rem */
+    padding: 0.9375rem; /* 15px converted to rem */
+    margin: 0.9375rem 0; /* 15px converted to rem */
     transition: transform 0.3s;
     display: flex;
     flex-direction: column; /* Stack elements vertically */
     justify-content: space-between; /* Space between title, image, and details */
     width: 100%; /* Full width of the parent */
-    max-width: 350px; /* Set a max width for larger screens */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); /* Optional: Add shadow for depth */
+    max-width: 21.875rem; /* 350px converted to rem */
+    box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.5); /* 2px and 10px shadows converted to rem */
 }
 
 .recipe-card:hover {
@@ -62,18 +62,17 @@ body {
 }
 
 .logo {
-    width: 50px; /* Adjust width as needed */
+    width: 3.125rem; /* 50px converted to rem */
     height: auto; /* Keeps aspect ratio */
 }
 
 /* Fixed size for recipe images */
 .recipe-image {
     width: 100%; /* Full width of the card */
-    height: auto; /* Automatically adjust height */
-    max-height: 200px; /* Limit the height */
-    object-fit: cover; /* Maintain aspect ratio and cover the area */
-    border-radius: 10px;
-    margin-bottom: 15px; /* Space between image and text */
+    height: 12.5rem; /* Fixed height for uniformity (200px converted to rem) */
+    object-fit: cover; /* Ensures the image covers the area without distortion */
+    border-radius: 0.625rem; /* 10px converted to rem */
+    margin-bottom: 0; /* No space below the image */
 }
 
 h5 {
@@ -81,23 +80,22 @@ h5 {
     overflow: hidden; /* Hide overflow text */
     text-overflow: ellipsis; /* Ellipsis for overflow text */
     white-space: nowrap; /* Prevent text from wrapping */
-    margin-bottom: 10px; /* Add space below the title */
+    margin-bottom: 0.3125rem; /* Reduced margin from 0.625rem to 0.3125rem (5px) */
 }
 
 .recipe-card-favorite {
-    /* Existing styles */
     background-color: #282727;
-    border-radius: 10px;
-    padding: 15px;
-    margin: 15px 0;
+    border-radius: 0.625rem; /* 10px converted to rem */
+    padding: 0.9375rem; /* 15px converted to rem */
+    margin: 0.9375rem 0; /* 15px converted to rem */
     transition: transform 0.3s;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     width: 100%;
-    max-width: 350px;
-    height: 24rem;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    max-width: 21.875rem; /* 350px converted to rem */
+    height: 20rem; /* Fixed height for all cards */
+    box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.5); /* 2px and 10px shadows converted to rem */
     position: relative; /* Ensure elements can be positioned inside */
 }
 
@@ -105,34 +103,6 @@ h5 {
     color: #a04747;
     text-align: center;
     text-transform: uppercase;
-    margin-top: 10px; /* Space between star and text */
-}
-
-.star-icon {
-    color: #FFD700;
-    font-size: 30px;
-    margin-bottom: 10px; /* Space above the star */
-    align-self: flex-start; /* Position it to the left or change as needed */
-}
-
-
-.star-button {
-    background-color: transparent; /* No background */
-    border: none; /* No border */
-    font-size: 3rem; /* Size of the star */
-    color: #FFD700; /* Gold color for the star */
-    padding: 0;
-    cursor: pointer;
-    outline: none; /* Remove default focus outline */
-    display: inline-block;
-}
-
-.star-button:hover {
-    color: #FFA500; /* Darker gold on hover */
-    transform: scale(1.2); /* Enlarge the star on hover */
-    transition: transform 0.2s;
-}
-
-.star-button:active {
-    transform: scale(1.1); /* Slightly shrink the star on click */
+    margin-top: 0; /* 10px converted to rem */
+    margin-bottom: 0.3125rem; /* Reduced margin for title to minimize space above the image */
 }

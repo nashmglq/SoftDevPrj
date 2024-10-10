@@ -1,100 +1,100 @@
-body {
-    background-color: #333; /* Dark background */
-    color: #f6e7d8; /* Light text */
-}
-
-.image {
-    width: 100%; /* Full width of the card */
-    height: auto; /* Maintain aspect ratio */
-    object-fit: cover; /* Maintain aspect ratio and cover the area */
-    border-radius: 10px;
-    margin-bottom: 15px; /* Space between image and text */
-}
-
-.details-section {
-    margin-top: 5rem;
-}
-
-@media (max-width: 576px) {
-    .details-section {
-        margin-top: 0;
+    body {
+        background-color: #333; /* Dark background */
+        color: #f6e7d8; /* Light text */
     }
-}
 
-.rates {
-    margin-top: 4rem;
-    display: flex;
-    flex-direction: column;
-}
+    .image {
+        width: 100%; /* Full width of the card */
+        height: auto; /* Maintain aspect ratio */
+        object-fit: cover; /* Maintain aspect ratio and cover the area */
+        border-radius: 10px;
+        margin-bottom: 15px; /* Space between image and text */
+    }
 
-.list-group-item {
-    color: #333; /* Sets the text color to black */
-}
+    .details-section {
+        margin-top: 5rem;
+    }
 
-.list-group-item strong {
-    color: #333; /* Ensures strong text is also black */
-}
+    @media (max-width: 576px) {
+        .details-section {
+            margin-top: 0;
+        }
+    }
 
-.list-group-item span {
-    color: #333; /* Ensures spans are also black */
-}
+    .rates {
+        margin-top: 4rem;
+        display: flex;
+        flex-direction: column;
+    }
 
-.custom-card {
-    max-width: auto; /* Adjust max-width here */
-    background-color: #3a3a3a; /* Set your desired background color */
-    border: 1px solid #ced4da; /* Optional: Add a border */
-    
-}
-.divider {
-    border: none; /* Remove the default border */
-    height: .2rem; /* Thickness of the line */
-    background-color: #ccc; /* Color of the line */
-    margin: 20px 0; /* Space above and below the line */
-    border-radius: .1rem;
-}
-.details-section .col-4 {
-    padding: .5rem; /* Adjust padding as necessary */
-}
-.border-right {
-    border-right: .1rem solid #ccc; /* Add right border */
-}
+    .list-group-item {
+        color: #333; /* Sets the text color to black */
+    }
 
-.details-section .col-4:last-child {
-    border-right: none; /* Remove border from the last column */
-}
+    .list-group-item strong {
+        color: #333; /* Ensures strong text is also black */
+    }
+
+    .list-group-item span {
+        color: #333; /* Ensures spans are also black */
+    }
+
+    .custom-card {
+        max-width: auto; /* Adjust max-width here */
+        background-color: #3a3a3a; /* Set your desired background color */
+        border: 1px solid #ced4da; /* Optional: Add a border */
+        
+    }
+    .divider {
+        border: none; /* Remove the default border */
+        height: .2rem; /* Thickness of the line */
+        background-color: #ccc; /* Color of the line */
+        margin: 20px 0; /* Space above and below the line */
+        border-radius: .1rem;
+    }
+    .details-section .col-4 {
+        padding: .5rem; /* Adjust padding as necessary */
+    }
+    .border-right {
+        border-right: .1rem solid #ccc; /* Add right border */
+    }
+
+    .details-section .col-4:last-child {
+        border-right: none; /* Remove border from the last column */
+    }
 
 
-.details-section h1 {
-    font-size: 2.5rem; /* Default font size for larger screens */
-}
-
-.details-section h4 {
-    font-size: 1.25rem; /* Default font size for larger screens */
-}
-
-/* Media query for mobile devices */
-@media (max-width: 768px) {
     .details-section h1 {
-        font-size: 1.5rem; /* Smaller font size for h1 on mobile */
+        font-size: 2.5rem; /* Default font size for larger screens */
     }
 
     .details-section h4 {
-        font-size: 1rem; /* Smaller font size for h4 on mobile */
+        font-size: 1.25rem; /* Default font size for larger screens */
     }
-}
 
-.custom-btn {
-    background-color: #eedf7a !important; /* Custom green color */
-    border-color: #eedf7a !important; /* Border color */
-    color: black; /* Text color */
-    font-weight: 600 !important;
-}
+    /* Media query for mobile devices */
+    @media (max-width: 768px) {
+        .details-section h1 {
+            font-size: 1.5rem; /* Smaller font size for h1 on mobile */
+        }
 
-.custom-btn-after {
-    background-color: #a04747; /* Custom green color */
-    border-color: #a04747; /* Border color */
-    color: white; /* Text color */
-}
+        .details-section h4 {
+            font-size: 1rem; /* Smaller font size for h4 on mobile */
+        }
+    }
+
+    .custom-btn {
+        background-color: #eedf7a !important; /* Custom green color */
+        border-color: #eedf7a !important; /* Border color */
+        color: black; /* Text color */
+        font-weight: 600 !important;
+    }
+
+    .custom-btn-after {
+        background-color: #a04747; /* Custom green color */
+        border-color: #a04747; /* Border color */
+        color: white; /* Text color */
+    }
 
 
 

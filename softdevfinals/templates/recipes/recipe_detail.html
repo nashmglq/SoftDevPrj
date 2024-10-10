@@ -175,14 +175,28 @@
 
         <div class="row">
             <div class="col-md-6">
-                <h4 class="text-center" style="color : #eedf7a;">Ingredients</h4>
-                <p>{{ object.ingredientsList }}</p>
+                <h4 class="text-center" style="color: #eedf7a;">Ingredients</h4>
+                <ul>
+                    {% for ingredient in ingredientsList %}
+                        {% if ingredient %}
+                            <li>{{ ingredient }}</li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
             </div>
             <div class="col-md-6">
-                <h4 class="text-center" style="color : #eedf7a;">Directions</h4>
-                <p>{{ object.directions }}</p>
+                <h4 class="text-center" style="color: #eedf7a;">Directions</h4>
+                <ul>
+                    {% for direction in directions %}
+                        {% if direction %}
+                            <li>{{ direction }}</li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
             </div>
         </div>
+        
+    
         <br>
         <hr class="divider">
 

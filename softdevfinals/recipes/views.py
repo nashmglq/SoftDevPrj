@@ -152,6 +152,12 @@ class RecipeDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
+        # Process ingredientsList and directions into lists, removing empty strings
+        context['ingredientsList'] = [ingredient.strip() for ingredient in self.object.ingredientsList.split('\n') if ingredient.strip()] if self.object.ingredientsList else []
+        context['directions'] = [direction.strip() for direction in self.object.directions.split('\n') if direction.strip()] if self.object.directions else []
+
+        # Existing context data code
         context['form'] = RatingCommentForm()
         context['comments'] = self.object.comments.all()
         context['rating'] = self.object.ratings.filter(user=self.request.user).first()
@@ -181,8 +187,6 @@ class RecipeDetailView(LoginRequiredMixin, DetailView):
 
         return context
 
-
-    
 
 class AddRatingCommentView(LoginRequiredMixin, View):
     def post(self, request, pk):
