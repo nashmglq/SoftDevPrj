@@ -10,6 +10,18 @@
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
     />
     <link rel="stylesheet" href="{% static 'css/landing.css' %}" />
+    <style>
+      .star-rating {
+        display: flex;
+        align-items: center;
+        color: #ffd708; /* Gold color for stars */
+      }
+
+      .star {
+        font-size: 1.5rem; /* Size of the stars */
+        margin-right: 2px; /* Space between stars */
+      }
+    </style>
   </head>
   <body>
     <div class="container-fluid d-flex flex-column justify-content-between">
@@ -39,35 +51,42 @@
 
           <!-- Right Side: Recipe Cards -->
           <div class="col-md-6">
-    <div class="row">
-        {% for recipe in trending_recipes %}
-        <div class="col-md-6 mb-4">
-            <div class="recipe-card">
-                <img
+            <div class="row">
+              {% for recipe in trending_recipes %}
+              <div class="col-md-6 mb-4">
+                <div class="recipe-card">
+                  <img
                     src="{{ recipe.image.url }}" 
                     alt="{{ recipe.title }}"       
                     class="recipe-image"
-                />
-                <h3 class="recipe-title">{{ recipe.name }}</h3> <!-- Dynamic title -->
-                <p class="recipe-description">
-                    {{ recipe.user }} <!-- Assuming you have a user field in your Recipe model -->
-                </p>
+                  />
+                  <h3 class="recipe-title">{{ recipe.name }}</h3> <!-- Dynamic title -->
+                <!-- Average Rating with stars -->
+                <div class="star-rating d-flex align-items-center">
+                  <p class="mr-2 mb-0">Ratings:</p>
+                  <div class="d-flex align-items-center">
+                    {% if recipe.average_rating %}
+                      {% for i in "12345"|make_list %}
+                        {% if i <= recipe.average_rating|floatformat:0 %}
+                          <span class="star">★</span>
+                        {% else %}
+                          <span class="star">☆</span>
+                        {% endif %}
+                      {% endfor %}
+                    {% else %}
+                      <p class="mb-0" style="color: #ffd708;">No ratings yet</p>
+                    {% endif %}
+                  </div>
+                </div>
 
-                <!-- Average Rating with yellow color -->
-                {% if recipe.average_rating %}
-                    <p style="color: #ffd708;"><strong>Average Rating:</strong> {{ recipe.average_rating|floatformat:1 }} / 5</p>
-                {% else %}
-                    <p style="color: #ffd708;"><strong>Average Rating:</strong> No ratings yet</p>
-                {% endif %}
+
+                </div>
+              </div>
+              {% endfor %}
             </div>
-        </div>
-        {% endfor %}
-    </div>
-</div>
           </div>
         </div>
       </div>
-
 
       <footer
         class="footer text-center text-lg-start"

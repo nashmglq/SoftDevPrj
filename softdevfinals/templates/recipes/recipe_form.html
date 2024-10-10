@@ -16,8 +16,10 @@
             <span class="nav-link ml-2">Share Mo Lang</span>
         </a>
         
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" style="background-color: white; border: none;">
+            <span class="navbar-toggler-icon" style="background-color: black; width: 25px; height: 3px; display: block; margin: 5px auto;"></span>
+            <span class="navbar-toggler-icon" style="background-color: black; width: 25px; height: 3px; display: block; margin: 5px auto;"></span>
+            <span class="navbar-toggler-icon" style="background-color: black; width: 25px; height: 3px; display: block; margin: 5px auto;"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
@@ -60,11 +62,21 @@
 
             <div class="form-group">
                 <label for="{{ form.image.id_for_label }}">Image:</label>
-                <input type="file" name="image" id="{{ form.image.id_for_label }}" class="form-control-file" required>
+                <!-- Display the current image if it exists -->
+                {% if object.image %}
+                    <div class="mb-2">
+                        <img src="{{ object.image.url }}" alt="Current Image" style="max-width: 200px; max-height: 200px; border: 1px solid #ccc; border-radius: 5px;">
+                    </div>
+                {% else %}
+                    <p>No image uploaded.</p>
+                {% endif %}
+                <input type="file" name="image" id="{{ form.image.id_for_label }}" class="form-control-file">
+                <small class="form-text text-muted">Leave blank if you don't want to change the image.</small>
                 {% for error in form.image.errors %}
                     <div class="alert alert-danger">{{ error }}</div>
                 {% endfor %}
             </div>
+            
 
             <div class="form-group">
                 <label for="{{ form.ingredients.id_for_label }}">Number of Ingredients:</label>
@@ -120,7 +132,7 @@
                 {% endfor %}
             </div>
 
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="submit" class="btn btn-primary mb-2">Submit</button>
         </form>
     </div>
 
