@@ -10,19 +10,18 @@
     <body>
         
         <div class="container">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <a href="{% url 'landing_page' %}" class="btn btn-custom">Return</a>
-            </div>
-            
             <h1>Contact Us</h1>
             <form method="POST">
                 {% csrf_token %}
                 {{ form.as_p }}
                 <button type="submit">Send</button>
             </form>
+            <div class="d-flex justify-content-between align-items-center mb-4 return-btn-container">
+                <a href="{% url 'landing_page' %}" class="btn btn-custom">Return</a>
+            </div>
         </div>
         <div class="footer">
-            &copy; 2024 Share Mo Lang. All rights reserved.
+            &copy; 2024 Copyright: Share Mo Lang
         </div>
     </body>
 </html>
