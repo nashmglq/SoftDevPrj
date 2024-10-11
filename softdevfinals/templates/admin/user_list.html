@@ -6,27 +6,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User List</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/home.css' %}"> 
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
 </head>
 <body>
 
-    {%include 'nav_admin.html'%}
+    {% include 'nav_admin.html' %}
     <div class="container my-4">
         <h1 class="mb-4">User List</h1>
-        
+
         <form class="d-flex mb-3" method="GET" action="">
             <input class="form-control me-2" type="search" name="q" placeholder="Search by username" value="{{ query }}">
             <button class="btn btn-outline-success" type="submit">Search</button>
         </form>
 
-        <div class="table-responsive">
-            <table class="table table-striped">
+        <!-- Scrollable table using Bootstrap classes -->
+        <div class="table-responsive" style="max-height: 400px;">
+            <table class="table table-striped table-hover table-bordered">
                 <thead>
                     <tr>
                         <th scope="col">Username</th>
                         <th scope="col">Email</th>
                         <th scope="col">Active</th>
-                        <th scope="col">Staff</th> 
+                        <th scope="col">Staff</th>
                         <th scope="col">Admin</th>
                         <th scope="col">Actions</th>
                     </tr>
@@ -42,20 +43,66 @@
                         <td>
                             <a href="{% url 'edit-user' user.id %}" class="btn btn-primary btn-sm m-2">Edit</a>
                             <a href="{% url 'delete-user' user.id %}" class="btn btn-danger btn-sm m-2">Delete</a>
-                            
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6">No users found</td> 
+                        <td colspan="6">No users found</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
+        <div class="d-flex mt-3">
+            <a href="{% url 'home' %}" class="btn btn-secondary me-2">Back to Home</a>   
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+                Add Category
+            </button>
+        </div>
+        
 
-        <a href="{% url 'home' %}" class="btn btn-secondary mt-2">Back to Home</a>
     </div>
+    <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" style="color: black;">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addCategoryModalLabel">Add New Category</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form to add a new category -->
+                    <form method="POST" action="{% url 'add-category' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="categoryName" class="form-label">Category Name</label>
+                            <input type="text" class="form-control" id="categoryName" name="name" placeholder="Enter category name" required>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Add Category</button>
+                        </div>
+                    </form>
+                    
+                    <!-- Display existing categories with delete option -->
+                    <h5 class="mt-4">Existing Categories</h5>
+                    <ul class="list-group">
+                        {% for category in categories %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center" style="color: black;">
+                                {{ category.name }}
+                                <form method="POST" action="{% url 'delete-category' category.id %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                </form>
+                            </li>
+                        {% empty %}
+                            <li>No categories available</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

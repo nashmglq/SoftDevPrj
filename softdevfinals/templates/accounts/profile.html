@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/profile.css' %}">
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
 </head>
@@ -100,21 +101,33 @@
                             <!-- Cooking Time -->
                             <p class="card-text"><strong>Cooking Time:</strong> {{ recipe.minutes }} minutes</p>
 
-                            <!-- Display the average rating -->
+
                             {% if recipe.average_rating %}
-                                <p>
-                                    <strong>Ratings:</strong>
+                            <div class="rating-star d-flex align-items-center">
+                                <span>
+                                    <strong>Rating:</strong>  <!-- Added Rating label -->
                                     {% for i in "12345" %}
-                                        {% if i <= recipe.average_rating|floatformat:0 %}
-                                            <span class="text-warning" style="font-size: 1.5em;">&#9733;</span>  <!-- Filled star -->
+                                        {% if forloop.counter <= recipe.integer_part %}
+                                            <i class="fas fa-star text-warning" aria-hidden="true"></i>  <!-- Full star -->
+                                        {% elif forloop.counter == recipe.integer_part|add:1 and recipe.fractional_part >= 0.5 %}
+                                            <i class="fas fa-star-half-alt text-warning" aria-hidden="true"></i>  <!-- Half star -->
                                         {% else %}
-                                            <span class="text-muted" style="font-size: 1.5em;">&#9734;</span>  <!-- Empty star -->
+                                            <i class="fas fa-star text-muted" aria-hidden="true"></i>  <!-- Empty star with gray color -->
                                         {% endif %}
                                     {% endfor %}
-                                </p>
-                            {% else %}
-                                <p>No ratings yet</p>
-                            {% endif %}      
+                                </span>
+                                <span class="ml-2">({{ recipe.average_rating|floatformat:1 }})</span>
+                            </div>
+                        {% else %}
+                            <div class="rating-star d-flex align-items-center">
+                                <strong>Rating:</strong> <small class="ml-2">No ratings yet.</small>  <!-- Added "Rating:" label -->
+                            </div>
+                        {% endif %}
+                        
+                        
+
+
+                            
                         </div>
                     </div>
                 </a>

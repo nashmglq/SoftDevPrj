@@ -22,4 +22,7 @@ urlpatterns = [
     path('pannel/users/', views.user_list, name='user-list'),
     path('pannel/users/edit/<int:user_id>/', views.edit_user, name='edit-user'),
     path('pannel/users/delete/<int:user_id>/', views.delete_user, name='delete-user'),
+    path('pannel/add-category/', views.add_category, name='add-category'),
+    path('delete-category/<int:category_id>/', views.delete_category, name='delete-category'),
+
 ]

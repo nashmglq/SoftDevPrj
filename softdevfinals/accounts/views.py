@@ -15,7 +15,8 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from .tokens import account_activation_token 
 from .models import Profile
-from .forms import CustomLoginForm, CustomUserCreationForm, UserUpdateForm, ProfileUpdateForm, ContactForm
+from recipes.models import Category
+from .forms import CustomLoginForm, CustomUserCreationForm, UserUpdateForm, ProfileUpdateForm, ContactForm, CategoryForm
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth import password_validation
 from django.contrib.auth.decorators import login_required
@@ -269,9 +270,21 @@ def password_reset_confirm(request, uidb64, token):
         })
     
     
+
 @login_required
 def profile(request):
     user_recipes = Recipe.objects.filter(user=request.user)  # Filter recipes by user
+    # Calculate average rating for each user's recipe
+    for recipe in user_recipes:
+        if recipe.ratings.exists():
+            recipe.average_rating = recipe.ratings.aggregate(Avg('score'))['score__avg']
+            recipe.integer_part = int(recipe.average_rating)
+            recipe.fractional_part = recipe.average_rating - recipe.integer_part
+        else:
+            recipe.average_rating = None
+            recipe.integer_part = 0
+            recipe.fractional_part = 0.0
+
     context = {
         'user_recipes': user_recipes,
     }
@@ -386,6 +399,9 @@ def landing_page(request):
     trending_recipes = random.sample(list(queryset), k=min(2, len(queryset)))
 
     return render(request, 'accounts/landing.html', {'trending_recipes': trending_recipes})
+
+
+
 @login_required
 def user_profile(request, user_id):
     # Get the user object for the specified user_id
@@ -408,7 +424,6 @@ def is_superuser_check(user):
         return False
     return True
 
-# Decorator for superuser check with redirect
 @user_passes_test(lambda u: u.is_superuser)
 def user_list(request):
     query = request.GET.get('q', '')  # Get search query from the request
@@ -416,10 +431,13 @@ def user_list(request):
         users = User.objects.filter(username__icontains=query)  # Filter users by username
     else:
         users = User.objects.all()  # Get all users if no query
+    
+    categories = Category.objects.all()  # Fetch all categories
 
     context = {
         'users': users,
         'query': query,
+        'categories': categories,  # Add categories to the context
     }
     return render(request, 'admin/user_list.html', context)
 
@@ -461,3 +479,21 @@ def delete_user(request, user_id):
         'user': user,
     }
     return render(request, 'admin/delete_user.html', context)
+
+@user_passes_test(lambda u: u.is_superuser)
+def add_category(request):
+    if request.method == 'POST':
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            form.save()  # Save the new category
+            messages.success(request, 'Category added successfully')
+            return redirect('home')  # Redirect to the home page after success
+    # If the request method is not POST or the form is invalid, redirect to home without rendering anything.
+    return redirect('home')
+
+@user_passes_test(lambda u: u.is_superuser)
+def delete_category(request, category_id):
+    category = get_object_or_404(Category, id=category_id)
+    category.delete()
+    messages.success(request, 'Category deleted successfully')
+    return redirect('user-list')

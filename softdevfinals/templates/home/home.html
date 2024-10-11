@@ -115,7 +115,7 @@
         
         <div class="text-center mt-4">
             {% for category in categories %}
-                <a href="{% url 'home' %}?category={{ category.name }}" class="btn {% if request.GET.category == category.name %}btn-primary{% else %}btn-secondary{% endif %}">
+                <a href="{% url 'home' %}?category={{ category.name }}" class="btn {% if request.GET.category == category.name %}btn-primary{% else %}btn-secondary{% endif %} m-1">
                     {{ category.name }}
                 </a>
             {% endfor %} 
@@ -166,7 +166,7 @@
 
                                 <h5 class="card-title d-flex align-items-center">Ratings: 
                                     {% if recipe.average_rating %}
-                                        <div class="rating-star d-flex align-items-center">
+                                    <div class="rating-star d-flex align-items-center ml-2">  
                                             <span>
                                                 {% for i in "12345" %}
                                                     {% if forloop.counter <= recipe.integer_part %}
@@ -181,7 +181,7 @@
                                             <span class="ml-2">({{ recipe.average_rating|floatformat:1 }})</span>
                                         </div>
                                     {% else %}
-                                        <small>No ratings yet.</small>
+                                    <small class="ml-2">No ratings yet.</small> 
                                     {% endif %}
                                 </h5>
                                 

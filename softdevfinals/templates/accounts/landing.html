@@ -9,6 +9,7 @@
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
     />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/landing.css' %}" />
     <style>
       .star-rating {
@@ -61,23 +62,27 @@
                     class="recipe-image"
                   />
                   <h3 class="recipe-title">{{ recipe.name }}</h3> <!-- Dynamic title -->
-                <!-- Average Rating with stars -->
-                <div class="star-rating d-flex align-items-center">
-                  <p class="mr-2 mb-0">Ratings:</p>
-                  <div class="d-flex align-items-center">
-                    {% if recipe.average_rating %}
-                      {% for i in "12345"|make_list %}
-                        {% if i <= recipe.average_rating|floatformat:0 %}
-                          <span class="star">★</span>
-                        {% else %}
-                          <span class="star">☆</span>
-                        {% endif %}
-                      {% endfor %}
-                    {% else %}
-                      <p class="mb-0" style="color: #ffd708;">No ratings yet</p>
-                    {% endif %}
+
+
+                  <div class="star-rating d-flex align-items-center">
+                      <p class="mr-2 mb-0">Ratings:</p>
+                      <div class="d-flex align-items-center">
+                          {% if recipe.average_rating %}
+                              {% for i in "12345"|make_list %}
+                                  {% if i < recipe.average_rating|floatformat:0 %}
+                                      <span class="star"><i class="fas fa-star fa-sm"></i></span>  <!-- Full Star -->
+                                  {% elif i == recipe.average_rating|floatformat:1|floatformat:0 %}
+                                      <span class="star"><i class="fas fa-star-half-alt fa-sm"></i></span>  <!-- Half Star -->
+                                  {% else %}
+                                      <span class="star"><i class="far fa-star fa-sm"></i></span>  <!-- Empty Star -->
+                                  {% endif %}
+                              {% endfor %}
+                          {% else %}
+                              <p class="mb-0" style="color: #ffd708;">No ratings yet</p>
+                          {% endif %}
+                      </div>
                   </div>
-                </div>
+
 
 
                 </div>
@@ -94,19 +99,22 @@
       >
         <div class="container d-flex justify-content-center py-5">
           <button
-            type="button"
-            class="btn btn-primary btn-lg btn-floating mx-2"
-            style="background-color: #54456b"
-          >
-            <i class="fab fa-facebook-f">Contact Us</i>
-          </button>
-          <button
-            type="button"
-            class="btn btn-primary btn-lg btn-floating mx-2"
-            style="background-color: #54456b"
-          >
-            <i class="fab fa-youtube">About Us</i>
-          </button>
+          type="button"
+          class="btn btn-primary btn-lg btn-floating mx-2"
+          style="background-color: #54456b"
+      >
+          <i class="fas fa-envelope me-2"></i> <!-- Add margin-end for spacing -->
+          Contact Us
+      </button>
+      <button
+          type="button"
+          class="btn btn-primary btn-lg btn-floating mx-2"
+          style="background-color: #54456b"
+      >
+          <i class="fas fa-info-circle me-2"></i> <!-- Add margin-end for spacing -->
+          About Us
+      </button>
+      
         </div>
 
         <div
