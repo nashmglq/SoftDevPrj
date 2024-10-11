@@ -5,14 +5,13 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>About Us</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
         <link rel="stylesheet" href="{% static 'css/about_us.css' %}">
     </head>
     <body>
         <div class="container">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <a href="{% url 'landing_page' %}" class="btn btn-custom">Return</a>
-            </div>
-            <div class="header-section">
+            <a href="{% url 'landing_page' %}" class="btn btn-custom">Return</a>
+            <div class="header-section text-center mb-4">
                 <h1>About Us</h1>
                 <p>
                     Welcome to our recipe-sharing platform! Our mission is to bring together passionate home cooks
@@ -20,24 +19,35 @@
                     From quick meals to gourmet experiences, we provide a place where creativity and deliciousness collide.
                 </p>
             </div>
-    
-            <div class="info-section">
-                <div class="info-box">
-                    <img src="{% static 'img/recipe.png' %}" alt="Recipe Icon">
-                    <h3>Share Your Recipes</h3>
-                    <p>Post your recipes, share your cooking secrets, and inspire others with your unique creations.</p>
+        
+            <div class="info-section row text-center">
+                <div class="col-md-4 mb-4">
+                    <div class="info-box">
+                        <img src="{% static 'img/recipe.png' %}" alt="Recipe Icon" class="img-fluid mb-3">
+                        <h3 class="h5">Share Your Recipes</h3>
+                        <p>Post your recipes, share your cooking secrets, and inspire others with your unique creations.</p>
+                    </div>
                 </div>
-                <div class="info-box">
-                    <img src="{% static 'img/community.png' %}" alt="Community Icon">
-                    <h3>Join Our Community</h3>
-                    <p>Be a part of a growing community of food lovers who explore new tastes and culinary techniques.</p>
+                <div class="col-md-4 mb-4">
+                    <div class="info-box">
+                        <img src="{% static 'img/community.png' %}" alt="Community Icon" class="img-fluid mb-3">
+                        <h3 class="h5">Join Our Community</h3>
+                        <p>Be a part of a growing community of food lovers who explore new tastes and culinary techniques.</p>
+                    </div>
                 </div>
-                <div class="info-box">
-                    <img src="{% static 'img/collaborate.png' %}" alt="Support Icon">
-                    <h3>Support & Collaborate</h3>
-                    <p>Learn, support, and collaborate with fellow home chefs to make cooking an exciting journey.</p>
+                <div class="col-md-4 mb-4">
+                    <div class="info-box">
+                        <img src="{% static 'img/collaborate.png' %}" alt="Support Icon" class="img-fluid mb-3">
+                        <h3 class="h5">Support & Collaborate</h3>
+                        <p>Learn, support, and collaborate with fellow home chefs to make cooking an exciting journey.</p>
+                    </div>
                 </div>
             </div>
         </div>
+        
+
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     </body>
     </html>

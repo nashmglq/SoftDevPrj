@@ -202,7 +202,6 @@
 
         <div class="rates">
             <h4 class="text-center" style="color: #eedf7a;">Rates and Comments</h4>
-
         
             <div class="bg-white p-3 rounded shadow mb-4" style="max-height: 200px; overflow: auto;">
                 <ul class="list-group mt-4">
@@ -225,32 +224,47 @@
         
                             {% if item.comment.user == user %}
                                 <div class="mt-2">
-                                    <button class="btn btn-warning btn-sm mt-2" onclick="toggleUpdateForm('update-form-{{ item.comment.id }}')">Update</button>
-                                    <div id="update-form-{{ item.comment.id }}" style="display: none; margin-top: 10px;">
-                                        <form method="POST" action="{% url 'update-rating-comment' item.comment.id %}">
-                                            {% csrf_token %}
-                                            <div class="form-group">
-                                                <label for="content">Update Comment:</label>
-                                                <input type="text" name="content" value="{{ item.comment.content }}" required class="form-control" placeholder="Update comment">
+                                    <button class="btn btn-warning btn-sm mt-2" data-toggle="modal" data-target="#updateModal-{{ item.comment.id }}">Update</button>
+                                    
+                                    <!-- Update Modal -->
+                                    <div class="modal fade" id="updateModal-{{ item.comment.id }}" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="updateModalLabel">Update Comment</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form method="POST" action="{% url 'update-rating-comment' item.comment.id %}">
+                                                        {% csrf_token %}
+
+                                                        <div class="form-group">
+                                                            <label for="score">Update Rating:</label>
+                                                            <input type="number" name="score" value="{{ item.rating.score }}" min="1" max="5" step="0.1" required class="form-control" placeholder="Update rating (1.0 - 5.0)">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="content">Update Comment:</label>
+                                                            <input type="text" name="content" value="{{ item.comment.content }}" required class="form-control" placeholder="Update comment">
+                                                        </div>
+                                                        <button type="submit" class="btn btn-primary">Submit Update</button>
+                                                    </form>
+                                                </div>
                                             </div>
-                                            <div class="form-group">
-                                                <label for="score">Update Rating:</label>
-                                                <input type="number" name="score" value="{{ item.rating.score }}" min="1" max="5" step="0.1" required class="form-control" placeholder="Update rating (1.0 - 5.0)">
-                                            </div>
-                                            <button type="submit" class="btn btn-primary btn-sm">Submit Update</button>
-                                        </form>
-                                        
+                                        </div>
                                     </div>
+        
                                     <form method="POST" action="{% url 'delete-rating-comment' item.comment.id %}" style="display:inline;">
                                         {% csrf_token %}
                                         <button type="submit" class="btn btn-danger btn-sm ml-2 mt-2">Delete</button>
                                     </form>
                                 </div>
                             {% elif request.user.is_superuser %}
-                            <form method="POST" action="{% url 'delete-rating-comment' item.comment.id %}" style="display:inline;">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-danger btn-sm ml-2 mt-2">Delete</button>
-                            </form>
+                                <form method="POST" action="{% url 'delete-rating-comment' item.comment.id %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger btn-sm ml-2 mt-2">Delete</button>
+                                </form>
                             {% endif %}
                         </li>
                     {% empty %}
@@ -261,26 +275,47 @@
         
             {% if not rating %}
             <div>
-                <h4 class="text-center" style="color: #eedf7a;">Leave a Comment</h4>
                 {% if object.user != user %}
-                <form method="POST" action="{% url 'add-rating-comment' object.pk %}" class="mt-2">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <label for="score">Rating:</label>
-                        <input type="number" name="score" step="0.1" min="1" max="5" required class="form-control" placeholder="Rate this recipe (0.0 - 5.0)">
+                    <button class="btn btn-primary mb-3" data-toggle="modal" data-target="#addCommentModal">Leave a Comment</button>
+        
+                    <!-- Add Comment Modal -->
+                    <div class="modal fade" id="addCommentModal" tabindex="-1" role="dialog" aria-labelledby="addCommentModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="addCommentModalLabel" style="color:black;">Leave a Comment</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form method="POST" action="{% url 'add-rating-comment' object.pk %}" class="mt-2">
+                                        {% csrf_token %}
+                                        <div class="form-group">
+                                            <label for="score" style="color: black;">Rating:</label>
+                                            <input type="number" name="score" step="0.1" min="1" max="5" required class="form-control" placeholder="Rate this recipe (1.0 - 5.0)">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="content" style="color: black;">Comment:</label>
+                                            <textarea name="content" required class="form-control" rows="3" placeholder="Leave a comment"></textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="content">Comment:</label>
-                        <textarea name="content" required class="form-control" rows="3" placeholder="Leave a comment"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                </form>
-                
                 {% else %}
                     <p class="text-danger">You cannot rate your own recipe.</p>
                 {% endif %}
             </div>
+        {% else %}
+            <p class="text-danger">You have already commented.</p>
         {% endif %}
+        
+        
+        </div>
+        
         
 
         <script>
