@@ -1,0 +1,105 @@
+/* GENERAL STYLES */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #343131;
+    color: white;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px;
+}
+
+.header-section {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.header-section h1 {
+    font-size: 48px;
+    color: #C15353;
+    margin-bottom: 20px;
+}
+
+.header-section p {
+    font-size: 18px;
+    max-width: 800px;
+    margin: 0 auto 30px auto;
+    color: #ddd;
+}
+
+.learn-more-btn {
+    background-color: #C15353;
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.learn-more-btn:hover {
+    background-color: #a04646;
+}
+
+/* Info Section */
+.info-section {
+    display: flex;
+    justify-content: space-between;
+    text-align: center;
+}
+
+.info-box {
+    background-color: #444;
+    padding: 30px;
+    border-radius: 10px;
+    flex: 1;
+    margin: 0 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.info-box img {
+    width: 50px;
+    margin-bottom: 20px;
+}
+
+.info-box h3 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #C15353;
+}
+
+.info-box p {
+    color: #ddd;
+    font-size: 16px;
+}
+
+
+.info-box img {
+    width: 200px;  /* Increase the width */
+    height: 200px; /* Set the height to match the width */
+    margin-bottom: -20px;
+}
+
+
+.btn-custom {
+    background-color: #C15353; 
+    color: white;              
+    padding: 10px 20px;       
+    border-radius: 5px;        
+    border: none;              
+    text-decoration: none;     
+    font-size: 16px;           
+    display: inline-block;     
+    transition: background-color 0.3s; 
+}
+
+.btn-custom:hover {
+    background-color: #a04646; 
+    color: white;              
+}

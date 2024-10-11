@@ -497,3 +497,6 @@ def delete_category(request, category_id):
     category.delete()
     messages.success(request, 'Category deleted successfully')
     return redirect('user-list')
+
+def about_us(request):
+    return render(request, 'accounts/about_us.html')

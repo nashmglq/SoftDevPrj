@@ -98,22 +98,25 @@
         style="background-color: #c15353"
       >
         <div class="container d-flex justify-content-center py-5">
-          <button
-          type="button"
-          class="btn btn-primary btn-lg btn-floating mx-2"
-          style="background-color: #54456b"
-      >
-          <i class="fas fa-envelope me-2"></i> <!-- Add margin-end for spacing -->
-          Contact Us
-      </button>
-      <button
-          type="button"
-          class="btn btn-primary btn-lg btn-floating mx-2"
-          style="background-color: #54456b"
-      >
-          <i class="fas fa-info-circle me-2"></i> <!-- Add margin-end for spacing -->
-          About Us
-      </button>
+          <a href="{% url 'contact_us' %}">
+            <button
+            type="button"
+            class="btn btn-primary btn-lg btn-floating mx-2"
+            style="background-color: #54456b">
+            <i class="fas fa-envelope me-2"></i> <!-- Add margin-end for spacing -->
+            Contact Us
+            </button>
+          </a>
+      <a href="{% url 'about_us' %}">
+        <button
+            type="button"
+            class="btn btn-primary btn-lg btn-floating mx-2"
+            style="background-color: #54456b"
+        >
+            <i class="fas fa-info-circle me-2"></i> <!-- Add margin-end for spacing -->
+            About Us
+        </button>
+    </a>
       
         </div>
 
